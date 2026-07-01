@@ -1,65 +1,131 @@
-import Image from "next/image";
+"use client";
+
+import BottomBar from "@/components/BottomBar";
+import JsonEditorPanel from "@/components/JsonEditorPanel";
+import PreviewPanel from "@/components/PreviewPanel";
+import TopBar from "@/components/TopBar";
+import { buildResumeFilename } from "@/lib/resumeHelpers";
+import { SAMPLE } from "@/lib/sampleData";
+import { ResumeData } from "@/lib/types";
+import { useEffect, useMemo, useRef, useState } from "react";
+
+const AUTO_PREVIEW_DELAY_MS = 400;
+
+type StatusKind = "muted" | "ok" | "error";
+
+const STATUS_COLOR: Record<StatusKind, string> = {
+  muted: "text-[#64748b]",
+  ok: "text-[#10b981]",
+  error: "text-[#ef4444]",
+};
 
 export default function Home() {
+  const [jsonText, setJsonText] = useState("");
+  const [debouncedText, setDebouncedText] = useState("");
+  const [flashMessage, setFlashMessage] = useState("");
+  const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function flash(text: string) {
+    setFlashMessage(text);
+    if (flashTimer.current) clearTimeout(flashTimer.current);
+    flashTimer.current = setTimeout(() => setFlashMessage(""), 5000);
+  }
+
+  function handleLoadSample() {
+    setJsonText(JSON.stringify(SAMPLE, null, 2));
+  }
+
+  function handleLoadFile(contents: string) {
+    setJsonText(contents);
+  }
+
+  // Debounce the raw text so we don't reparse on every keystroke.
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedText(jsonText), AUTO_PREVIEW_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, [jsonText]);
+
+  const { resumeData, status, statusKind } = useMemo(() => {
+    const raw = debouncedText.trim();
+    if (!raw) {
+      return {
+        resumeData: null as ResumeData | null,
+        status: "Paste JSON to preview",
+        statusKind: "muted" as StatusKind,
+      };
+    }
+    try {
+      const data = JSON.parse(raw) as ResumeData;
+      return { resumeData: data, status: "Parsed successfully", statusKind: "ok" as StatusKind };
+    } catch (e) {
+      return {
+        resumeData: null as ResumeData | null,
+        status: `JSON error: ${(e as Error).message}`,
+        statusKind: "error" as StatusKind,
+      };
+    }
+  }, [debouncedText]);
+
+  async function handleExportPdf() {
+    if (!resumeData) return;
+    const { generateResumePdfBlob } = await import("@/lib/pdf/generateResumePdf");
+    const blob = await generateResumePdfBlob(resumeData);
+    const filename = buildResumeFilename(resumeData.personal ?? {}, "pdf");
+    downloadBlob(blob, filename);
+    flash(`Saved: ${filename}`);
+  }
+
+  async function handleExportDocx() {
+    if (!resumeData) return;
+    const { generateResumeDocxBlob } = await import("@/lib/docx/generateResumeDocx");
+    const blob = await generateResumeDocxBlob(resumeData);
+    const filename = buildResumeFilename(resumeData.personal ?? {}, "docx");
+    downloadBlob(blob, filename);
+    flash(`Saved: ${filename}`);
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="flex h-screen flex-col bg-[#1e1e2e]">
+      <TopBar />
+
+      <div className="flex flex-1 min-h-0 gap-3 px-3 pt-[10px]">
+        <div className="w-[460px] shrink-0 flex flex-col">
+          <JsonEditorPanel
+            value={jsonText}
+            onChange={setJsonText}
+            onLoadSample={handleLoadSample}
+            onLoadFile={handleLoadFile}
+          />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div className="flex-1 min-w-0 flex flex-col">
+          <div className="flex items-center justify-between mb-[6px]">
+            <span className="text-[13px] font-bold text-[#e2e8f0]">Preview</span>
+            <span className={`text-[12px] ${STATUS_COLOR[statusKind]}`}>{status}</span>
+          </div>
+          <div className="flex-1 min-h-0 overflow-hidden rounded border border-[#3f3f5c] bg-[#2a2a3e]">
+            <PreviewPanel data={resumeData} />
+          </div>
         </div>
-      </main>
+      </div>
+
+      <BottomBar
+        canExport={resumeData !== null}
+        onExportPdf={handleExportPdf}
+        onExportDocx={handleExportDocx}
+        flashMessage={flashMessage}
+      />
     </div>
   );
+}
+
+function downloadBlob(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
