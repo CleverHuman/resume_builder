@@ -1,8 +1,31 @@
-export default function TopBar() {
+export type BuilderTab = "resume" | "proposal";
+
+interface Props {
+  activeTab: BuilderTab;
+  onTabChange: (tab: BuilderTab) => void;
+}
+
+const TABS: { id: BuilderTab; label: string }[] = [
+  { id: "resume", label: "Resume Builder" },
+  { id: "proposal", label: "Proposal Builder" },
+];
+
+export default function TopBar({ activeTab, onTabChange }: Props) {
   return (
-    <header className="h-[54px] shrink-0 bg-[#13131f] flex items-center gap-3 px-5">
-      <h1 className="text-[15px] font-bold text-[#e2e8f0]">Resume Builder</h1>
-      <span className="text-[13px] text-[#64748b]">JSON → Preview → PDF / DOCX</span>
+    <header className="h-[54px] shrink-0 bg-[#13131f] flex items-center gap-2 px-5">
+      {TABS.map((tab) => (
+        <button
+          key={tab.id}
+          onClick={() => onTabChange(tab.id)}
+          className={`rounded px-3 py-[6px] text-[13px] font-bold cursor-pointer ${
+            activeTab === tab.id
+              ? "bg-[#7c3aed] text-white"
+              : "text-[#e2e8f0] hover:bg-[#1e1e2e]"
+          }`}
+        >
+          {tab.label}
+        </button>
+      ))}
     </header>
   );
 }
