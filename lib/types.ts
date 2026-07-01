@@ -49,3 +49,15 @@ export const CONTACT_FIELDS: (keyof PersonalInfo)[] = [
   "github",
   "website",
 ];
+
+/** A saved row from the Supabase `resume` table. */
+export interface ApplicationRecord {
+  id: number;
+  created_at: string;
+  name: string;
+  title: string;
+  job_title: string;
+  company: string;
+  resume: ResumeData;
+  cover_letter: string | null;
+}

@@ -6,7 +6,11 @@ import ProposalTextPanel from "@/components/ProposalTextPanel";
 import { downloadBlob } from "@/lib/downloadBlob";
 import { useRef, useState } from "react";
 
-export default function ProposalBuilderView() {
+interface Props {
+  recordId: number | null;
+}
+
+export default function ProposalBuilderView({ recordId }: Props) {
   const [text, setText] = useState("");
   const [flashMessage, setFlashMessage] = useState("");
   const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -19,11 +23,28 @@ export default function ProposalBuilderView() {
 
   async function handleExportPdf() {
     if (!text.trim()) return;
+
+    if (!recordId) {
+      alert("Download the Resume first!");
+      return;
+    }
+
+    const { saveCoverLetterRecord } = await import("@/lib/supabase/resumeRecords");
+    const result = await saveCoverLetterRecord(recordId, text);
+    if (result.status === "no-resume") {
+      alert("Download the Resume first!");
+      return;
+    }
+
     const { generateProposalPdfBlob } = await import("@/lib/pdf/generateProposalPdf");
     const blob = await generateProposalPdfBlob(text);
     const filename = "cover letter.pdf";
     downloadBlob(blob, filename);
-    flash(`Saved: ${filename}`);
+    flash(
+      result.status === "error"
+        ? `Saved: ${filename} (sync failed: ${result.error})`
+        : `Saved: ${filename} (synced)`
+    );
   }
 
   return (

@@ -33,11 +33,16 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function PreviewPanel({ data }: { data: ResumeData | null }) {
+interface Props {
+  data: ResumeData | null;
+  emptyMessage?: string;
+}
+
+export default function PreviewPanel({ data, emptyMessage = "Paste JSON then click Parse" }: Props) {
   if (!data) {
     return (
       <div className="flex h-full items-center justify-center text-[#64748b] text-sm">
-        Paste JSON then click Parse
+        {emptyMessage}
       </div>
     );
   }

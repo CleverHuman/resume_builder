@@ -1,8 +1,16 @@
-export default function ProposalPreviewPanel({ text }: { text: string }) {
+interface Props {
+  text: string;
+  emptyMessage?: string;
+}
+
+export default function ProposalPreviewPanel({
+  text,
+  emptyMessage = "Start typing to preview",
+}: Props) {
   if (!text.trim()) {
     return (
       <div className="flex h-full items-center justify-center text-[#64748b] text-sm">
-        Start typing to preview
+        {emptyMessage}
       </div>
     );
   }

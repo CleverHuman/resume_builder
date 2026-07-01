@@ -19,7 +19,11 @@ const STATUS_COLOR: Record<StatusKind, string> = {
   error: "text-[#ef4444]",
 };
 
-export default function ResumeBuilderView() {
+interface Props {
+  onRecordIdChange: (id: number) => void;
+}
+
+export default function ResumeBuilderView({ onRecordIdChange }: Props) {
   const [jsonText, setJsonText] = useState("");
   const [debouncedText, setDebouncedText] = useState("");
   const [flashMessage, setFlashMessage] = useState("");
@@ -77,11 +81,30 @@ export default function ResumeBuilderView() {
 
   async function handleExportDocx() {
     if (!resumeData) return;
+
+    const { saveResumeRecord } = await import("@/lib/supabase/resumeRecords");
+    const result = await saveResumeRecord(resumeData);
+
+    if (result.status === "invalid") {
+      alert(`Missing required field(s): ${result.missingFields.join(", ")}`);
+      return;
+    }
+    if (result.status === "duplicate") {
+      alert("You Already Submitted your application!");
+      return;
+    }
+    if (result.status === "error") {
+      alert(`Could not save to Supabase: ${result.error}`);
+      return;
+    }
+
+    onRecordIdChange(result.id);
+
     const { generateResumeDocxBlob } = await import("@/lib/docx/generateResumeDocx");
     const blob = await generateResumeDocxBlob(resumeData);
     const filename = buildResumeFilename(resumeData.personal ?? {}, "docx");
     downloadBlob(blob, filename);
-    flash(`Saved: ${filename}`);
+    flash(`Saved: ${filename} (synced)`);
   }
 
   return (

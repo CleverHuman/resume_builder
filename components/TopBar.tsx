@@ -1,4 +1,4 @@
-export type BuilderTab = "resume" | "proposal";
+export type BuilderTab = "resume" | "proposal" | "applications";
 
 interface Props {
   activeTab: BuilderTab;
@@ -8,6 +8,7 @@ interface Props {
 const TABS: { id: BuilderTab; label: string }[] = [
   { id: "resume", label: "Resume Builder" },
   { id: "proposal", label: "Proposal Builder" },
+  { id: "applications", label: "Applications" },
 ];
 
 export default function TopBar({ activeTab, onTabChange }: Props) {
