@@ -20,10 +20,11 @@ const STATUS_COLOR: Record<StatusKind, string> = {
 };
 
 interface Props {
+  table: string;
   onRecordIdChange: (id: number) => void;
 }
 
-export default function ResumeBuilderView({ onRecordIdChange }: Props) {
+export default function ResumeBuilderView({ table, onRecordIdChange }: Props) {
   const [jsonText, setJsonText] = useState("");
   const [debouncedText, setDebouncedText] = useState("");
   const [flashMessage, setFlashMessage] = useState("");
@@ -83,7 +84,7 @@ export default function ResumeBuilderView({ onRecordIdChange }: Props) {
     if (!resumeData) return;
 
     const { saveResumeRecord } = await import("@/lib/supabase/resumeRecords");
-    const result = await saveResumeRecord(resumeData);
+    const result = await saveResumeRecord(resumeData, table);
 
     if (result.status === "invalid") {
       alert(`Missing required field(s): ${result.missingFields.join(", ")}`);

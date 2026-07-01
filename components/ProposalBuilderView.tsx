@@ -8,9 +8,10 @@ import { useRef, useState } from "react";
 
 interface Props {
   recordId: number | null;
+  table: string;
 }
 
-export default function ProposalBuilderView({ recordId }: Props) {
+export default function ProposalBuilderView({ recordId, table }: Props) {
   const [text, setText] = useState("");
   const [flashMessage, setFlashMessage] = useState("");
   const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -30,7 +31,7 @@ export default function ProposalBuilderView({ recordId }: Props) {
     }
 
     const { saveCoverLetterRecord } = await import("@/lib/supabase/resumeRecords");
-    const result = await saveCoverLetterRecord(recordId, text);
+    const result = await saveCoverLetterRecord(recordId, text, table);
     if (result.status === "no-resume") {
       alert("Download the Resume first!");
       return;

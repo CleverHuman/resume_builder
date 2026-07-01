@@ -18,7 +18,10 @@ export type SaveResumeResult =
  * a record for that company already exists (schema requires name/title/job_title/
  * company/resume to all be non-null, so resumes are never partially saved).
  */
-export async function saveResumeRecord(resumeData: ResumeData): Promise<SaveResumeResult> {
+export async function saveResumeRecord(
+  resumeData: ResumeData,
+  table: string
+): Promise<SaveResumeResult> {
   const personal = resumeData.personal ?? {};
   const missingFields = missingRequiredFields(personal);
   if (missingFields.length > 0) {
@@ -29,7 +32,7 @@ export async function saveResumeRecord(resumeData: ResumeData): Promise<SaveResu
   const company = personal.company!.trim();
 
   const { data: existing, error: selectError } = await supabase
-    .from("resume")
+    .from(table)
     .select("id")
     .eq("company", company)
     .limit(1)
@@ -43,7 +46,7 @@ export async function saveResumeRecord(resumeData: ResumeData): Promise<SaveResu
   }
 
   const { data, error } = await supabase
-    .from("resume")
+    .from(table)
     .insert({
       name: personal.name!.trim(),
       title: personal.title!.trim(),
@@ -68,14 +71,15 @@ export type SaveCoverLetterResult =
 /** Attaches cover_letter to an already-saved resume record; requires recordId. */
 export async function saveCoverLetterRecord(
   recordId: number | null,
-  coverLetter: string
+  coverLetter: string,
+  table: string
 ): Promise<SaveCoverLetterResult> {
   if (!recordId) {
     return { status: "no-resume" };
   }
   const supabase = createClient();
   const { error } = await supabase
-    .from("resume")
+    .from(table)
     .update({ cover_letter: coverLetter })
     .eq("id", recordId);
 
@@ -89,6 +93,7 @@ interface ListApplicationsParams {
   page: number; // 1-indexed
   pageSize: number;
   search?: string;
+  table: string;
 }
 
 interface ListApplicationsResult {
@@ -113,13 +118,14 @@ export async function listApplications({
   page,
   pageSize,
   search,
+  table,
 }: ListApplicationsParams): Promise<ListApplicationsResult> {
   const supabase = createClient();
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
   let query = supabase
-    .from("resume")
+    .from(table)
     .select("id, created_at, name, title, job_title, company, resume, cover_letter", {
       count: "exact",
     });

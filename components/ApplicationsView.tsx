@@ -7,12 +7,13 @@ import { useEffect, useRef, useState } from "react";
 
 interface Props {
   isActive: boolean;
+  table: string;
 }
 
 const PAGE_SIZE_OPTIONS = [10, 20, 50];
 const SEARCH_DEBOUNCE_MS = 400;
 
-export default function ApplicationsView({ isActive }: Props) {
+export default function ApplicationsView({ isActive, table }: Props) {
   const [applications, setApplications] = useState<ApplicationRecord[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [page, setPage] = useState(1);
@@ -49,6 +50,7 @@ export default function ApplicationsView({ isActive }: Props) {
       page: pageToLoad,
       pageSize: pageSizeToUse,
       search,
+      table,
     });
     if (requestId !== requestIdRef.current) return; // a newer request has since started; drop this one
     setApplications(data);
@@ -63,7 +65,7 @@ export default function ApplicationsView({ isActive }: Props) {
     // Deferred so the effect body itself never synchronously triggers setState.
     const timer = setTimeout(() => loadApplications(page, pageSize, debouncedSearch), 0);
     return () => clearTimeout(timer);
-  }, [isActive, page, pageSize, debouncedSearch]);
+  }, [isActive, page, pageSize, debouncedSearch, table]);
 
   const selected = applications.find((a) => a.id === selectedId) ?? null;
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));

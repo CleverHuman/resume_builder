@@ -5,7 +5,7 @@ import LoginView from "@/components/LoginView";
 import ProposalBuilderView from "@/components/ProposalBuilderView";
 import ResumeBuilderView from "@/components/ResumeBuilderView";
 import TopBar, { BuilderTab } from "@/components/TopBar";
-import { clearStoredRole, loadStoredRole, Role, storeRole } from "@/lib/auth";
+import { clearStoredRole, loadStoredRole, Role, storeRole, tableForRole } from "@/lib/auth";
 import { useEffect, useState } from "react";
 
 type AuthState = { status: "checking" } | { status: "loggedOut" } | { status: "loggedIn"; role: Role };
@@ -35,6 +35,7 @@ export default function Home() {
     clearStoredRole();
     setAuth({ status: "loggedOut" });
     setActiveTab("resume");
+    setRecordId(null); // tied to the previous role's table; irrelevant after switching accounts
   }
 
   if (auth.status === "checking") {
@@ -45,8 +46,9 @@ export default function Home() {
     return <LoginView onLogin={handleLogin} />;
   }
 
-  const canSeeApplications = auth.role === "admin";
+  const canSeeApplications = auth.role === "admin" || auth.role === "super";
   const effectiveTab = activeTab === "applications" && !canSeeApplications ? "resume" : activeTab;
+  const table = tableForRole(auth.role);
 
   return (
     <div className="flex h-screen flex-col bg-[#1e1e2e]">
@@ -58,14 +60,14 @@ export default function Home() {
       />
       {/* All permitted views stay mounted so switching tabs doesn't lose in-progress edits. */}
       <div className={effectiveTab === "resume" ? "contents" : "hidden"}>
-        <ResumeBuilderView onRecordIdChange={setRecordId} />
+        <ResumeBuilderView table={table} onRecordIdChange={setRecordId} />
       </div>
       <div className={effectiveTab === "proposal" ? "contents" : "hidden"}>
-        <ProposalBuilderView recordId={recordId} />
+        <ProposalBuilderView recordId={recordId} table={table} />
       </div>
       {canSeeApplications && (
         <div className={effectiveTab === "applications" ? "contents" : "hidden"}>
-          <ApplicationsView isActive={effectiveTab === "applications"} />
+          <ApplicationsView isActive={effectiveTab === "applications"} table={table} />
         </div>
       )}
     </div>
