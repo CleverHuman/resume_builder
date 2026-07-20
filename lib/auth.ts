@@ -1,4 +1,4 @@
-export type Role = "user" | "admin" | "super";
+export type Role = "user" | "admin" | "super" | "john";
 
 interface Credential {
   username: string;
@@ -10,6 +10,7 @@ const CREDENTIALS: Credential[] = [
   { username: "bidder", password: "qwe123QWE!@#", role: "user" },
   { username: "admin", password: "qwe123QWE!@#", role: "admin" },
   { username: "super", password: "qwe123QWE!@#", role: "super" },
+  { username: "john", password: "qwe123QWE!@#", role: "john" },
 ];
 
 /** Mock auth: checks against the hardcoded credential list, no backend involved. */
@@ -19,12 +20,19 @@ export function authenticate(username: string, password: string): Role | null {
 }
 
 /**
- * super connects to a separate Supabase table; user/admin share the default one.
+ * Each privileged profile can point at its own Supabase table; user/admin share the default.
  * Note: the actual Postgres table is `resumev1` (lowercase) — unquoted identifiers
  * are case-folded to lowercase by Postgres, so `resumeV1` in SQL created `resumev1`.
  */
 export function tableForRole(role: Role): string {
-  return role === "super" ? "resumev1" : "resume";
+  if (role === "super") return "resumev1";
+  if (role === "john") return "euresumev0";
+  return "resume";
+}
+
+/** Roles that can open the Applications tab. */
+export function canSeeApplications(role: Role): boolean {
+  return role === "admin" || role === "super" || role === "john";
 }
 
 const STORAGE_KEY = "resumeApp.authRole";
@@ -32,7 +40,9 @@ const STORAGE_KEY = "resumeApp.authRole";
 export function loadStoredRole(): Role | null {
   if (typeof window === "undefined") return null;
   const value = localStorage.getItem(STORAGE_KEY);
-  return value === "user" || value === "admin" || value === "super" ? value : null;
+  return value === "user" || value === "admin" || value === "super" || value === "john"
+    ? value
+    : null;
 }
 
 export function storeRole(role: Role): void {

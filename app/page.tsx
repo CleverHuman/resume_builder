@@ -5,7 +5,14 @@ import LoginView from "@/components/LoginView";
 import ProposalBuilderView from "@/components/ProposalBuilderView";
 import ResumeBuilderView from "@/components/ResumeBuilderView";
 import TopBar, { BuilderTab } from "@/components/TopBar";
-import { clearStoredRole, loadStoredRole, Role, storeRole, tableForRole } from "@/lib/auth";
+import {
+  canSeeApplications as roleCanSeeApplications,
+  clearStoredRole,
+  loadStoredRole,
+  Role,
+  storeRole,
+  tableForRole,
+} from "@/lib/auth";
 import { useEffect, useState } from "react";
 
 type AuthState = { status: "checking" } | { status: "loggedOut" } | { status: "loggedIn"; role: Role };
@@ -46,7 +53,7 @@ export default function Home() {
     return <LoginView onLogin={handleLogin} />;
   }
 
-  const canSeeApplications = auth.role === "admin" || auth.role === "super";
+  const canSeeApplications = roleCanSeeApplications(auth.role);
   const effectiveTab = activeTab === "applications" && !canSeeApplications ? "resume" : activeTab;
   const table = tableForRole(auth.role);
 
