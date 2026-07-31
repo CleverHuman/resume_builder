@@ -16,28 +16,38 @@ export function parseBoldSegments(text: string): BoldSegment[] {
 export function formatContactLine(personal: PersonalInfo): string {
   return CONTACT_FIELDS.map((f) => personal[f])
     .filter((v): v is string => Boolean(v))
-    .join(" | ");
+    .join("  |  ");
 }
 
-export function formatExperienceMeta(exp: Experience): string {
-  const parts: string[] = [];
-  if (exp.company) parts.push(exp.company);
-  if (exp.location) parts.push(exp.location);
-  const start = exp.start_date ?? "";
-  const end = exp.end_date ?? "";
-  if (start || end) parts.push(`${start} - ${end}`);
-  return parts.join(" | ");
+/** En-dash date range, e.g. "Mar 2023 – Present". */
+export function formatDateRange(start?: string, end?: string): string {
+  if (!start && !end) return "";
+  if (start && end) return `${start} – ${end}`;
+  return start || end || "";
 }
 
-export function formatEducationMeta(edu: Education): string {
-  let meta = edu.institution ?? "";
-  if (edu.location) meta += ` - ${edu.location}`;
+export function formatExperienceDates(exp: Experience): string {
+  return formatDateRange(exp.start_date, exp.end_date);
+}
+
+/** Company line location segment (no company — company is styled separately). */
+export function formatExperienceLocation(exp: Experience): string {
+  return exp.location?.trim() ?? "";
+}
+
+export function formatEducationDates(edu: Education): string {
   if (edu.start_year && edu.end_year) {
-    meta += ` | ${edu.start_year} - ${edu.end_year}`;
-  } else if (edu.graduation_date) {
-    meta += ` | ${edu.graduation_date}`;
+    return formatDateRange(edu.start_year, edu.end_year);
   }
-  return meta;
+  return edu.graduation_date?.trim() ?? "";
+}
+
+/** Institution + location for the education secondary segment. */
+export function formatEducationPlace(edu: Education): string {
+  const parts: string[] = [];
+  if (edu.institution) parts.push(edu.institution);
+  if (edu.location) parts.push(edu.location);
+  return parts.join(", ");
 }
 
 /** Normalize skills into [category, items[]][] pairs; category is "" for a flat list. */

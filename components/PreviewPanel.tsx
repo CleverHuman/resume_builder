@@ -1,35 +1,33 @@
 import {
   formatContactLine,
-  formatEducationMeta,
-  formatExperienceMeta,
+  formatEducationDates,
+  formatEducationPlace,
+  formatExperienceDates,
+  formatExperienceLocation,
   parseBoldSegments,
   skillEntries,
 } from "@/lib/resumeHelpers";
+import { RESUME_COLORS, RESUME_FONT, RESUME_SECTIONS } from "@/lib/resumeStyle";
 import { ResumeData } from "@/lib/types";
 
-function Bullet({ text }: { text: string }) {
+function BoldSpans({ text }: { text: string }) {
   return (
-    <li className="pl-[18px] -indent-[9px] leading-[1.4] text-[10pt] text-[#111111] mb-[2px] list-none">
-      <span>{"• "}</span>
+    <>
       {parseBoldSegments(text).map((seg, i) =>
-        seg.bold ? (
-          <strong key={i}>{seg.text}</strong>
-        ) : (
-          <span key={i}>{seg.text}</span>
-        )
+        seg.bold ? <strong key={i}>{seg.text}</strong> : <span key={i}>{seg.text}</span>
       )}
-    </li>
+    </>
   );
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <>
-      <h2 className="text-[13pt] font-bold text-[#111111] mt-[14px] mb-[1px] leading-[1.2]">
-        {children}
-      </h2>
-      <hr className="border-t border-black mb-[6px]" />
-    </>
+    <h2
+      className="mt-[10px] mb-[6px] border-b pb-[2px] text-[13pt] font-bold leading-[1.2]"
+      style={{ color: RESUME_COLORS.accent, borderColor: RESUME_COLORS.accent }}
+    >
+      {children}
+    </h2>
   );
 }
 
@@ -38,7 +36,10 @@ interface Props {
   emptyMessage?: string;
 }
 
-export default function PreviewPanel({ data, emptyMessage = "Paste JSON then click Parse" }: Props) {
+export default function PreviewPanel({
+  data,
+  emptyMessage = "Load sample or paste resume JSON to preview",
+}: Props) {
   if (!data) {
     return (
       <div className="flex h-full items-center justify-center text-[#64748b] text-sm">
@@ -55,37 +56,53 @@ export default function PreviewPanel({ data, emptyMessage = "Paste JSON then cli
   const education = data.education ?? [];
 
   return (
-    <div className="bg-white text-[#111111] font-[Calibri,_sans-serif] px-6 py-6 h-full overflow-auto">
+    <div
+      className="h-full overflow-auto bg-white px-6 py-5"
+      style={{
+        color: RESUME_COLORS.dark,
+        fontFamily: `${RESUME_FONT}, Georgia, 'Times New Roman', serif`,
+      }}
+    >
       {personal.name && (
-        <h1 className="text-[22pt] font-bold text-center mb-[3px] leading-[1.2]">
-          {personal.name}
+        <h1
+          className="mb-[2px] text-center text-[22pt] font-bold leading-[1.2]"
+          style={{ color: RESUME_COLORS.dark }}
+        >
+          {personal.name.toUpperCase()}
         </h1>
       )}
 
       {personal.title && (
-        <p className="text-[13pt] font-semibold text-center mb-[6px] leading-[1.2]">
+        <p
+          className="mb-[4px] text-center text-[13pt] leading-[1.2]"
+          style={{ color: RESUME_COLORS.accent }}
+        >
           {personal.title}
         </p>
       )}
 
       {contact && (
-        <p className="text-[10pt] text-center mb-[8px]">{contact}</p>
+        <p className="mb-[6px] text-center text-[11pt]" style={{ color: RESUME_COLORS.muted }}>
+          {contact}
+        </p>
       )}
 
       {summary && (
         <section>
-          <SectionTitle>SUMMARY</SectionTitle>
-          <p className="text-[10pt] leading-[1.4] mb-[4px]">{summary}</p>
+          <SectionTitle>{RESUME_SECTIONS.summary}</SectionTitle>
+          <p className="mb-[2px] text-justify text-[12pt] leading-[1.35]">
+            <BoldSpans text={summary} />
+          </p>
         </section>
       )}
 
       {skills.length > 0 && (
         <section>
-          <SectionTitle>TECHNICAL SKILLS</SectionTitle>
+          <SectionTitle>{RESUME_SECTIONS.skills}</SectionTitle>
           {skills.map(([category, items]) => (
-            <p key={category || "flat"} className="text-[10pt] leading-[1.4] mb-[2px]">
-              {category && <strong>{category}: </strong>}
-              {items.join(" | ")}
+            <p key={category || "flat"} className="mb-[2px] text-[12pt] leading-[1.35]">
+              {category && <strong>{category}:  </strong>}
+              {items.join(", ")}
             </p>
           ))}
         </section>
@@ -93,23 +110,49 @@ export default function PreviewPanel({ data, emptyMessage = "Paste JSON then cli
 
       {experience.length > 0 && (
         <section>
-          <SectionTitle>WORK EXPERIENCE</SectionTitle>
+          <SectionTitle>{RESUME_SECTIONS.experience}</SectionTitle>
           {experience.map((exp, i) => {
-            const meta = formatExperienceMeta(exp);
+            const dates = formatExperienceDates(exp);
+            const location = formatExperienceLocation(exp);
             return (
-              <div key={i} className="mb-[4px]">
-                {exp.position && (
-                  <p className="text-[10.5pt] font-bold mt-[10px] mb-[1px] leading-[1.4]">
-                    {exp.position}
+              <div key={i} className="mb-[2px]">
+                {(exp.position || dates) && (
+                  <div className="mt-[8px] mb-[1px] flex items-baseline justify-between gap-2">
+                    <p className="text-[12.5pt] font-bold leading-[1.3]">{exp.position}</p>
+                    {dates && (
+                      <p
+                        className="shrink-0 text-[11.5pt] leading-[1.3]"
+                        style={{ color: RESUME_COLORS.muted }}
+                      >
+                        {dates}
+                      </p>
+                    )}
+                  </div>
+                )}
+                {(exp.company || location) && (
+                  <p className="mb-[3px] text-[12pt] leading-[1.3]">
+                    {exp.company && (
+                      <strong style={{ color: RESUME_COLORS.accent }}>{exp.company}</strong>
+                    )}
+                    {exp.company && location && (
+                      <em style={{ color: RESUME_COLORS.muted }}>  •  </em>
+                    )}
+                    {location && <span style={{ color: RESUME_COLORS.muted }}>{location}</span>}
                   </p>
                 )}
-                {meta && (
-                  <p className="text-[10pt] italic mb-[3px] leading-[1.4]">{meta}</p>
-                )}
                 {exp.highlights && exp.highlights.length > 0 && (
-                  <ul>
+                  <ul className="m-0 list-none p-0">
                     {exp.highlights.map((hl, j) => (
-                      <Bullet key={j} text={hl} />
+                      <li
+                        key={j}
+                        className="mb-[2px] pl-[14px] text-[12pt] leading-[1.35]"
+                        style={{
+                          textIndent: "-12px",
+                        }}
+                      >
+                        <span style={{ color: RESUME_COLORS.accent }}>• </span>
+                        <BoldSpans text={hl} />
+                      </li>
                     ))}
                   </ul>
                 )}
@@ -121,17 +164,29 @@ export default function PreviewPanel({ data, emptyMessage = "Paste JSON then cli
 
       {education.length > 0 && (
         <section>
-          <SectionTitle>EDUCATION</SectionTitle>
+          <SectionTitle>{RESUME_SECTIONS.education}</SectionTitle>
           {education.map((edu, i) => {
-            const meta = formatEducationMeta(edu);
+            const place = formatEducationPlace(edu);
+            const dates = formatEducationDates(edu);
             return (
-              <div key={i} className="mb-[4px]">
-                {edu.degree && (
-                  <p className="text-[10.5pt] font-bold mt-[10px] mb-[1px] leading-[1.4]">
-                    {edu.degree}
+              <div key={i} className="mt-[6px] flex items-baseline justify-between gap-2">
+                <p className="text-[12pt] leading-[1.3]">
+                  {edu.degree && <strong>{edu.degree}</strong>}
+                  {edu.degree && place && (
+                    <span style={{ color: RESUME_COLORS.muted }}>  —  {place}</span>
+                  )}
+                  {!edu.degree && place && (
+                    <span style={{ color: RESUME_COLORS.muted }}>{place}</span>
+                  )}
+                </p>
+                {dates && (
+                  <p
+                    className="shrink-0 text-[11.5pt] leading-[1.3]"
+                    style={{ color: RESUME_COLORS.muted }}
+                  >
+                    {dates}
                   </p>
                 )}
-                {meta && <p className="text-[10pt] italic leading-[1.4]">{meta}</p>}
               </div>
             );
           })}

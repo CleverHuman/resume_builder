@@ -108,6 +108,15 @@ export default function ResumeBuilderView({ table, onRecordIdChange }: Props) {
     flash(`Saved: ${filename} (synced)`);
   }
 
+  async function handleExportDocxWithoutSave() {
+    if (!resumeData) return;
+    const { generateResumeDocxBlob } = await import("@/lib/docx/generateResumeDocx");
+    const blob = await generateResumeDocxBlob(resumeData);
+    const filename = buildResumeFilename(resumeData.personal ?? {}, "docx");
+    downloadBlob(blob, filename);
+    flash(`Saved: ${filename} (asynchronously)`);
+  }
+
   return (
     <>
       <div className="flex flex-1 min-h-0 gap-3 px-3 pt-[10px]">
@@ -135,6 +144,7 @@ export default function ResumeBuilderView({ table, onRecordIdChange }: Props) {
         canExport={resumeData !== null}
         onExportPdf={handleExportPdf}
         onExportDocx={handleExportDocx}
+        onExportDocxWithoutSave={handleExportDocxWithoutSave}
         flashMessage={flashMessage}
       />
     </>

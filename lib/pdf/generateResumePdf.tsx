@@ -1,10 +1,19 @@
 import {
   formatContactLine,
-  formatEducationMeta,
-  formatExperienceMeta,
+  formatEducationDates,
+  formatEducationPlace,
+  formatExperienceDates,
+  formatExperienceLocation,
   parseBoldSegments,
   skillEntries,
 } from "@/lib/resumeHelpers";
+import {
+  RESUME_COLORS,
+  RESUME_PDF_FONT,
+  RESUME_PDF_FONT_BOLD,
+  RESUME_PDF_FONT_ITALIC,
+  RESUME_SECTIONS,
+} from "@/lib/resumeStyle";
 import { ResumeData } from "@/lib/types";
 import {
   Document,
@@ -15,88 +24,144 @@ import {
   View,
 } from "@react-pdf/renderer";
 
-const MARGIN = 0.85 * 72; // inches -> points
-const DARK = "#111111";
+const MARGIN_X = 0.75 * 72;
+const MARGIN_Y = 0.59 * 72;
 
 const styles = StyleSheet.create({
   page: {
-    paddingTop: MARGIN,
-    paddingBottom: MARGIN,
-    paddingLeft: MARGIN,
-    paddingRight: MARGIN,
-    color: DARK,
+    paddingTop: MARGIN_Y,
+    paddingBottom: MARGIN_Y,
+    paddingLeft: MARGIN_X,
+    paddingRight: MARGIN_X,
+    color: RESUME_COLORS.dark,
+    fontFamily: RESUME_PDF_FONT,
   },
   name: {
-    fontFamily: "Helvetica-Bold",
+    fontFamily: RESUME_PDF_FONT_BOLD,
     fontSize: 22,
     textAlign: "center",
-    marginBottom: 3,
+    marginBottom: 2,
+    color: RESUME_COLORS.dark,
   },
   title: {
-    fontFamily: "Helvetica-Bold",
+    fontFamily: RESUME_PDF_FONT,
     fontSize: 13,
     textAlign: "center",
-    marginBottom: 6,
+    marginBottom: 4,
+    color: RESUME_COLORS.accent,
   },
   contact: {
-    fontFamily: "Helvetica",
-    fontSize: 10,
+    fontFamily: RESUME_PDF_FONT,
+    fontSize: 11,
     textAlign: "center",
-    marginBottom: 8,
+    marginBottom: 6,
+    color: RESUME_COLORS.muted,
   },
   sectionTitle: {
-    fontFamily: "Helvetica-Bold",
+    fontFamily: RESUME_PDF_FONT_BOLD,
     fontSize: 13,
-    marginTop: 12,
-    marginBottom: 1,
+    marginTop: 10,
+    marginBottom: 2,
+    color: RESUME_COLORS.accent,
   },
   hr: {
     borderBottomWidth: 1,
-    borderBottomColor: "black",
+    borderBottomColor: RESUME_COLORS.accent,
     marginBottom: 6,
   },
   body: {
-    fontFamily: "Helvetica",
-    fontSize: 10,
-    lineHeight: 1.4,
+    fontFamily: RESUME_PDF_FONT,
+    fontSize: 12,
+    lineHeight: 1.35,
+    textAlign: "justify",
+    color: RESUME_COLORS.dark,
   },
   skillLine: {
-    fontFamily: "Helvetica",
-    fontSize: 10,
-    lineHeight: 1.4,
+    fontFamily: RESUME_PDF_FONT,
+    fontSize: 12,
+    lineHeight: 1.35,
     marginBottom: 2,
+    color: RESUME_COLORS.dark,
   },
   skillCategory: {
-    fontFamily: "Helvetica-Bold",
+    fontFamily: RESUME_PDF_FONT_BOLD,
   },
-  position: {
-    fontFamily: "Helvetica-Bold",
-    fontSize: 10.5,
-    marginTop: 10,
+  expHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "baseline",
+    marginTop: 8,
     marginBottom: 1,
   },
-  meta: {
-    fontFamily: "Helvetica-Oblique",
-    fontSize: 10,
+  position: {
+    fontFamily: RESUME_PDF_FONT_BOLD,
+    fontSize: 12.5,
+    color: RESUME_COLORS.dark,
+    flexGrow: 1,
+    flexShrink: 1,
+    paddingRight: 8,
+  },
+  dates: {
+    fontFamily: RESUME_PDF_FONT,
+    fontSize: 11.5,
+    color: RESUME_COLORS.muted,
+  },
+  companyRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
     marginBottom: 3,
+  },
+  company: {
+    fontFamily: RESUME_PDF_FONT_BOLD,
+    fontSize: 12,
+    color: RESUME_COLORS.accent,
+  },
+  companySep: {
+    fontFamily: RESUME_PDF_FONT_ITALIC,
+    fontSize: 11.5,
+    color: RESUME_COLORS.muted,
+  },
+  location: {
+    fontFamily: RESUME_PDF_FONT,
+    fontSize: 11.5,
+    color: RESUME_COLORS.muted,
   },
   bulletRow: {
     flexDirection: "row",
     marginBottom: 2,
+    paddingLeft: 2,
   },
   bulletMark: {
-    width: 14,
-    fontFamily: "Helvetica",
-    fontSize: 10,
+    width: 12,
+    fontFamily: RESUME_PDF_FONT,
+    fontSize: 12,
+    color: RESUME_COLORS.accent,
   },
   bulletText: {
     flex: 1,
-    fontFamily: "Helvetica",
-    fontSize: 10,
-    lineHeight: 1.4,
+    fontFamily: RESUME_PDF_FONT,
+    fontSize: 12,
+    lineHeight: 1.35,
+    color: RESUME_COLORS.dark,
   },
   bold: {
-    fontFamily: "Helvetica-Bold",
+    fontFamily: RESUME_PDF_FONT_BOLD,
+  },
+  eduHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "baseline",
+    marginTop: 6,
+  },
+  eduDegree: {
+    fontFamily: RESUME_PDF_FONT_BOLD,
+    fontSize: 12,
+    color: RESUME_COLORS.dark,
+  },
+  eduPlace: {
+    fontFamily: RESUME_PDF_FONT,
+    fontSize: 11.5,
+    color: RESUME_COLORS.muted,
   },
 });
 
@@ -136,24 +201,28 @@ function ResumePdfDocument({ data }: { data: ResumeData }) {
   return (
     <Document>
       <Page size="LETTER" style={styles.page}>
-        {personal.name && <Text style={styles.name}>{personal.name}</Text>}
+        {personal.name && (
+          <Text style={styles.name}>{personal.name.toUpperCase()}</Text>
+        )}
         {personal.title && <Text style={styles.title}>{personal.title}</Text>}
         {contact && <Text style={styles.contact}>{contact}</Text>}
 
         {summary && (
           <View>
-            <SectionTitle>SUMMARY</SectionTitle>
-            <Text style={[styles.body, { marginBottom: 4 }]}>{summary}</Text>
+            <SectionTitle>{RESUME_SECTIONS.summary}</SectionTitle>
+            <Text style={[styles.body, { marginBottom: 2 }]}>
+              <BoldText text={summary} />
+            </Text>
           </View>
         )}
 
         {skills.length > 0 && (
           <View>
-            <SectionTitle>TECHNICAL SKILLS</SectionTitle>
+            <SectionTitle>{RESUME_SECTIONS.skills}</SectionTitle>
             {skills.map(([category, items]) => (
               <Text key={category || "flat"} style={styles.skillLine}>
-                {category && <Text style={styles.skillCategory}>{category}: </Text>}
-                {items.join(" | ")}
+                {category && <Text style={styles.skillCategory}>{category}:  </Text>}
+                {items.join(", ")}
               </Text>
             ))}
           </View>
@@ -161,13 +230,29 @@ function ResumePdfDocument({ data }: { data: ResumeData }) {
 
         {experience.length > 0 && (
           <View>
-            <SectionTitle>WORK EXPERIENCE</SectionTitle>
+            <SectionTitle>{RESUME_SECTIONS.experience}</SectionTitle>
             {experience.map((exp, i) => {
-              const meta = formatExperienceMeta(exp);
+              const dates = formatExperienceDates(exp);
+              const location = formatExperienceLocation(exp);
               return (
                 <View key={i} wrap={false}>
-                  {exp.position && <Text style={styles.position}>{exp.position}</Text>}
-                  {meta && <Text style={styles.meta}>{meta}</Text>}
+                  {(exp.position || dates) && (
+                    <View style={styles.expHeader}>
+                      <Text style={styles.position}>{exp.position ?? ""}</Text>
+                      {dates ? <Text style={styles.dates}>{dates}</Text> : null}
+                    </View>
+                  )}
+                  {(exp.company || location) && (
+                    <View style={styles.companyRow}>
+                      {exp.company ? (
+                        <Text style={styles.company}>{exp.company}</Text>
+                      ) : null}
+                      {exp.company && location ? (
+                        <Text style={styles.companySep}>  •  </Text>
+                      ) : null}
+                      {location ? <Text style={styles.location}>{location}</Text> : null}
+                    </View>
+                  )}
                   {(exp.highlights ?? []).map((hl, j) => (
                     <View key={j} style={styles.bulletRow}>
                       <Text style={styles.bulletMark}>•</Text>
@@ -184,13 +269,21 @@ function ResumePdfDocument({ data }: { data: ResumeData }) {
 
         {education.length > 0 && (
           <View>
-            <SectionTitle>EDUCATION</SectionTitle>
+            <SectionTitle>{RESUME_SECTIONS.education}</SectionTitle>
             {education.map((edu, i) => {
-              const meta = formatEducationMeta(edu);
+              const place = formatEducationPlace(edu);
+              const dates = formatEducationDates(edu);
               return (
-                <View key={i} wrap={false}>
-                  {edu.degree && <Text style={styles.position}>{edu.degree}</Text>}
-                  {meta && <Text style={styles.meta}>{meta}</Text>}
+                <View key={i} style={styles.eduHeader} wrap={false}>
+                  <Text style={{ flex: 1, paddingRight: 8 }}>
+                    {edu.degree ? <Text style={styles.eduDegree}>{edu.degree}</Text> : null}
+                    {edu.degree && place ? (
+                      <Text style={styles.eduPlace}>  —  {place}</Text>
+                    ) : place ? (
+                      <Text style={styles.eduPlace}>{place}</Text>
+                    ) : null}
+                  </Text>
+                  {dates ? <Text style={styles.dates}>{dates}</Text> : null}
                 </View>
               );
             })}

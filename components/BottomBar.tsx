@@ -2,6 +2,7 @@ interface Props {
   canExport: boolean;
   onExportPdf: () => void;
   onExportDocx: () => void;
+  onExportDocxWithoutSave: () => void;
   flashMessage: string;
 }
 
@@ -9,6 +10,7 @@ export default function BottomBar({
   canExport,
   onExportPdf,
   onExportDocx,
+  onExportDocxWithoutSave,
   flashMessage,
 }: Props) {
   return (
@@ -26,6 +28,13 @@ export default function BottomBar({
         className="rounded px-5 py-[10px] text-[13px] font-bold text-white bg-[#2563eb] hover:bg-[#1d4ed8] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
       >
         Export as DOCX
+      </button>
+      <button
+        onClick={onExportDocxWithoutSave}
+        disabled={!canExport}
+        className="rounded px-5 py-[10px] text-[13px] font-bold text-white bg-[#2563eb] hover:bg-[#1d4ed8] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+      >
+        Export as DOCX Without Save
       </button>
       {flashMessage && (
         <span className="text-[13px] text-[#10b981]">{flashMessage}</span>
