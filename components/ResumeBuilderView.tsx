@@ -3,6 +3,7 @@
 import BottomBar from "@/components/BottomBar";
 import JsonEditorPanel from "@/components/JsonEditorPanel";
 import PreviewPanel from "@/components/PreviewPanel";
+import ResizableSplit from "@/components/ResizableSplit";
 import { downloadBlob } from "@/lib/downloadBlob";
 import { buildResumeFilename } from "@/lib/resumeHelpers";
 import { SAMPLE } from "@/lib/sampleData";
@@ -119,25 +120,29 @@ export default function ResumeBuilderView({ table, onRecordIdChange }: Props) {
 
   return (
     <>
-      <div className="flex flex-1 min-h-0 gap-3 px-3 pt-[10px]">
-        <div className="w-[460px] shrink-0 flex flex-col">
-          <JsonEditorPanel
-            value={jsonText}
-            onChange={setJsonText}
-            onLoadSample={handleLoadSample}
-            onLoadFile={handleLoadFile}
-          />
-        </div>
-
-        <div className="flex-1 min-w-0 flex flex-col">
-          <div className="flex items-center justify-between mb-[6px]">
-            <span className="text-[13px] font-bold text-[#e2e8f0]">Preview</span>
-            <span className={`text-[12px] ${STATUS_COLOR[statusKind]}`}>{status}</span>
-          </div>
-          <div className="flex-1 min-h-0 overflow-hidden rounded border border-[#3f3f5c] bg-[#2a2a3e]">
-            <PreviewPanel data={resumeData} />
-          </div>
-        </div>
+      <div className="flex flex-1 min-h-0 px-3 pt-[10px]">
+        <ResizableSplit
+          storageKey="resumeApp.resumeSplitWidth"
+          left={
+            <JsonEditorPanel
+              value={jsonText}
+              onChange={setJsonText}
+              onLoadSample={handleLoadSample}
+              onLoadFile={handleLoadFile}
+            />
+          }
+          right={
+            <div className="flex h-full min-h-0 flex-col">
+              <div className="mb-[6px] flex items-center justify-between">
+                <span className="text-[13px] font-bold text-[#e2e8f0]">Preview</span>
+                <span className={`text-[12px] ${STATUS_COLOR[statusKind]}`}>{status}</span>
+              </div>
+              <div className="min-h-0 flex-1 overflow-hidden rounded border border-[#3f3f5c] bg-[#2a2a3e]">
+                <PreviewPanel data={resumeData} />
+              </div>
+            </div>
+          }
+        />
       </div>
 
       <BottomBar
