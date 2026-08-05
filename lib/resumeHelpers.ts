@@ -35,6 +35,11 @@ export function formatExperienceLocation(exp: Experience): string {
   return exp.location?.trim() ?? "";
 }
 
+/** Join skill names with pipes: "A | B | C". */
+export function formatSkillList(items: string[]): string {
+  return items.join(" | ");
+}
+
 export function formatEducationDates(edu: Education): string {
   if (edu.start_year && edu.end_year) {
     return formatDateRange(edu.start_year, edu.end_year);

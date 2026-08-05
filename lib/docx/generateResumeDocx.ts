@@ -4,6 +4,7 @@ import {
   formatEducationPlace,
   formatExperienceDates,
   formatExperienceLocation,
+  formatSkillList,
   parseBoldSegments,
   skillEntries,
 } from "@/lib/resumeHelpers";
@@ -162,7 +163,7 @@ export async function generateResumeDocxBlob(data: ResumeData): Promise<Blob> {
       if (category) {
         runs.push(
           new TextRun({
-            text: `${category}:  `,
+            text: `${category}: `,
             bold: true,
             size: 24,
             color: RESUME_COLORS_HEX.dark,
@@ -172,7 +173,7 @@ export async function generateResumeDocxBlob(data: ResumeData): Promise<Blob> {
       }
       runs.push(
         new TextRun({
-          text: items.join(", "),
+          text: formatSkillList(items),
           size: 24,
           color: RESUME_COLORS_HEX.dark,
           font: RESUME_FONT,
@@ -237,8 +238,7 @@ export async function generateResumeDocxBlob(data: ResumeData): Promise<Blob> {
         if (exp.company && location) {
           runs.push(
             new TextRun({
-              text: "  •  ",
-              italics: true,
+              text: " | ",
               size: 23,
               color: RESUME_COLORS_HEX.muted,
               font: RESUME_FONT,
