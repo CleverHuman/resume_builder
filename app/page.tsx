@@ -10,6 +10,7 @@ import {
   clearStoredRole,
   loadStoredRole,
   Role,
+  showsEducationExtras,
   storeRole,
   tableForRole,
 } from "@/lib/auth";
@@ -56,6 +57,7 @@ export default function Home() {
   const canSeeApplications = roleCanSeeApplications(auth.role);
   const effectiveTab = activeTab === "applications" && !canSeeApplications ? "resume" : activeTab;
   const table = tableForRole(auth.role);
+  const educationExtras = showsEducationExtras(auth.role);
 
   return (
     <div className="flex h-screen flex-col bg-[#1e1e2e]">
@@ -67,14 +69,22 @@ export default function Home() {
       />
       {/* All permitted views stay mounted so switching tabs doesn't lose in-progress edits. */}
       <div className={effectiveTab === "resume" ? "contents" : "hidden"}>
-        <ResumeBuilderView table={table} onRecordIdChange={setRecordId} />
+        <ResumeBuilderView
+          table={table}
+          onRecordIdChange={setRecordId}
+          showEducationExtras={educationExtras}
+        />
       </div>
       <div className={effectiveTab === "proposal" ? "contents" : "hidden"}>
         <ProposalBuilderView recordId={recordId} table={table} />
       </div>
       {canSeeApplications && (
         <div className={effectiveTab === "applications" ? "contents" : "hidden"}>
-          <ApplicationsView isActive={effectiveTab === "applications"} table={table} />
+          <ApplicationsView
+            isActive={effectiveTab === "applications"}
+            table={table}
+            showEducationExtras={educationExtras}
+          />
         </div>
       )}
     </div>

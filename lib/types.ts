@@ -29,6 +29,11 @@ export interface Education {
   start_year?: string;
   end_year?: string;
   graduation_date?: string;
+  /** John-role extras — also accepted as "Core Modules" / "Capstone". */
+  core_modules?: string | string[];
+  capstone?: string;
+  "Core Modules"?: string | string[];
+  Capstone?: string;
 }
 
 export type Skills = Record<string, string[]> | string[];

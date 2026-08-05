@@ -35,6 +35,11 @@ export function canSeeApplications(role: Role): boolean {
   return role === "jay" || role === "super" || role === "john";
 }
 
+/** John-only: render Core Modules / Capstone under education. */
+export function showsEducationExtras(role: Role): boolean {
+  return role === "john";
+}
+
 const STORAGE_KEY = "resumeApp.authRole";
 
 export function loadStoredRole(): Role | null {

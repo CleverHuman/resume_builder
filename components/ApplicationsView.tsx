@@ -8,12 +8,17 @@ import { useEffect, useRef, useState } from "react";
 interface Props {
   isActive: boolean;
   table: string;
+  showEducationExtras?: boolean;
 }
 
 const PAGE_SIZE_OPTIONS = [10, 20, 50];
 const SEARCH_DEBOUNCE_MS = 400;
 
-export default function ApplicationsView({ isActive, table }: Props) {
+export default function ApplicationsView({
+  isActive,
+  table,
+  showEducationExtras = false,
+}: Props) {
   const [applications, setApplications] = useState<ApplicationRecord[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [page, setPage] = useState(1);
@@ -179,6 +184,7 @@ export default function ApplicationsView({ isActive, table }: Props) {
             <PreviewPanel
               data={selected?.resume ?? null}
               emptyMessage="Select an application to preview its resume"
+              showEducationExtras={showEducationExtras}
             />
           </div>
         </div>

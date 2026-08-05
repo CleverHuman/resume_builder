@@ -1,4 +1,5 @@
 import {
+  educationExtraBullets,
   formatContactLine,
   formatEducationDates,
   formatEducationPlace,
@@ -128,7 +129,7 @@ const styles = StyleSheet.create({
   },
   bulletRow: {
     flexDirection: "row",
-    marginBottom: 2,
+    marginBottom: 1,
     paddingLeft: 2,
   },
   bulletMark: {
@@ -152,6 +153,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "baseline",
     marginTop: 6,
+    marginBottom: 4,
   },
   eduDegree: {
     fontFamily: RESUME_PDF_FONT_BOLD,
@@ -190,7 +192,13 @@ function BoldText({ text }: { text: string }) {
   );
 }
 
-function ResumePdfDocument({ data }: { data: ResumeData }) {
+function ResumePdfDocument({
+  data,
+  showEducationExtras,
+}: {
+  data: ResumeData;
+  showEducationExtras: boolean;
+}) {
   const personal = data.personal ?? {};
   const summary = data.summary ?? personal.summary ?? "";
   const contact = formatContactLine(personal);
@@ -273,17 +281,29 @@ function ResumePdfDocument({ data }: { data: ResumeData }) {
             {education.map((edu, i) => {
               const place = formatEducationPlace(edu);
               const dates = formatEducationDates(edu);
+              const extras = showEducationExtras ? educationExtraBullets(edu) : [];
               return (
-                <View key={i} style={styles.eduHeader} wrap={false}>
-                  <Text style={{ flex: 1, paddingRight: 8 }}>
-                    {edu.degree ? <Text style={styles.eduDegree}>{edu.degree}</Text> : null}
-                    {edu.degree && place ? (
-                      <Text style={styles.eduPlace}>  —  {place}</Text>
-                    ) : place ? (
-                      <Text style={styles.eduPlace}>{place}</Text>
-                    ) : null}
-                  </Text>
-                  {dates ? <Text style={styles.dates}>{dates}</Text> : null}
+                <View key={i}>
+                  <View style={styles.eduHeader} wrap={false}>
+                    <Text style={{ flex: 1, paddingRight: 8 }}>
+                      {edu.degree ? <Text style={styles.eduDegree}>{edu.degree}</Text> : null}
+                      {edu.degree && place ? (
+                        <Text style={styles.eduPlace}>  —  {place}</Text>
+                      ) : place ? (
+                        <Text style={styles.eduPlace}>{place}</Text>
+                      ) : null}
+                    </Text>
+                    {dates ? <Text style={styles.dates}>{dates}</Text> : null}
+                  </View>
+                  {extras.map((extra, j) => (
+                    <View key={j} style={styles.bulletRow} wrap={false}>
+                      <Text style={styles.bulletMark}>•</Text>
+                      <Text style={styles.bulletText}>
+                        <Text style={styles.bold}>{extra.label}: </Text>
+                        <BoldText text={extra.text} />
+                      </Text>
+                    </View>
+                  ))}
                 </View>
               );
             })}
@@ -294,6 +314,14 @@ function ResumePdfDocument({ data }: { data: ResumeData }) {
   );
 }
 
-export async function generateResumePdfBlob(data: ResumeData): Promise<Blob> {
-  return pdf(<ResumePdfDocument data={data} />).toBlob();
+export async function generateResumePdfBlob(
+  data: ResumeData,
+  options: { showEducationExtras?: boolean } = {}
+): Promise<Blob> {
+  return pdf(
+    <ResumePdfDocument
+      data={data}
+      showEducationExtras={options.showEducationExtras ?? false}
+    />
+  ).toBlob();
 }
