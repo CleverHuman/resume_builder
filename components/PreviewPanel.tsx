@@ -175,7 +175,7 @@ export default function PreviewPanel({
             const extras = showEducationExtras ? educationExtraBullets(edu) : [];
             return (
               <div key={i} className="mt-[6px]">
-                <div className="flex items-baseline justify-between gap-2">
+                <div className="flex items-baseline justify-between gap-2 mb-[3px]">
                   <p className="text-[12pt] leading-[1.3]">
                     {edu.degree && <strong>{edu.degree}</strong>}
                     {edu.degree && place && (

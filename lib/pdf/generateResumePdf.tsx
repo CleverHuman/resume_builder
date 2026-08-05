@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
   },
   bulletRow: {
     flexDirection: "row",
-    marginBottom: 2,
+    marginBottom: 1,
     paddingLeft: 2,
   },
   bulletMark: {
@@ -153,6 +153,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "baseline",
     marginTop: 6,
+    marginBottom: 4,
   },
   eduDegree: {
     fontFamily: RESUME_PDF_FONT_BOLD,
