@@ -1,4 +1,5 @@
 import {
+  educationExtraBullets,
   formatContactLine,
   formatEducationDates,
   formatEducationPlace,
@@ -273,17 +274,29 @@ function ResumePdfDocument({ data }: { data: ResumeData }) {
             {education.map((edu, i) => {
               const place = formatEducationPlace(edu);
               const dates = formatEducationDates(edu);
+              const extras = educationExtraBullets(edu);
               return (
-                <View key={i} style={styles.eduHeader} wrap={false}>
-                  <Text style={{ flex: 1, paddingRight: 8 }}>
-                    {edu.degree ? <Text style={styles.eduDegree}>{edu.degree}</Text> : null}
-                    {edu.degree && place ? (
-                      <Text style={styles.eduPlace}>  —  {place}</Text>
-                    ) : place ? (
-                      <Text style={styles.eduPlace}>{place}</Text>
-                    ) : null}
-                  </Text>
-                  {dates ? <Text style={styles.dates}>{dates}</Text> : null}
+                <View key={i}>
+                  <View style={styles.eduHeader} wrap={false}>
+                    <Text style={{ flex: 1, paddingRight: 8 }}>
+                      {edu.degree ? <Text style={styles.eduDegree}>{edu.degree}</Text> : null}
+                      {edu.degree && place ? (
+                        <Text style={styles.eduPlace}>  —  {place}</Text>
+                      ) : place ? (
+                        <Text style={styles.eduPlace}>{place}</Text>
+                      ) : null}
+                    </Text>
+                    {dates ? <Text style={styles.dates}>{dates}</Text> : null}
+                  </View>
+                  {extras.map((extra, j) => (
+                    <View key={j} style={styles.bulletRow} wrap={false}>
+                      <Text style={styles.bulletMark}>•</Text>
+                      <Text style={styles.bulletText}>
+                        <Text style={styles.bold}>{extra.label}: </Text>
+                        <BoldText text={extra.text} />
+                      </Text>
+                    </View>
+                  ))}
                 </View>
               );
             })}

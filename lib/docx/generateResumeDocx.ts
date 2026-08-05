@@ -1,4 +1,5 @@
 import {
+  educationExtraBullets,
   formatContactLine,
   formatEducationDates,
   formatEducationPlace,
@@ -275,6 +276,7 @@ export async function generateResumeDocxBlob(data: ResumeData): Promise<Blob> {
     for (const edu of education) {
       const place = formatEducationPlace(edu);
       const dates = formatEducationDates(edu);
+      const extras = educationExtraBullets(edu);
       const runs: TextRun[] = [];
 
       if (edu.degree) {
@@ -312,11 +314,30 @@ export async function generateResumeDocxBlob(data: ResumeData): Promise<Blob> {
 
       children.push(
         paragraph({
-          spacing: { before: 80, after: 0 },
+          spacing: { before: 80, after: extras.length > 0 ? 40 : 0 },
           tabStops: [{ type: TabStopType.RIGHT, position: CONTENT_WIDTH }],
           children: runs,
         })
       );
+
+      for (const extra of extras) {
+        children.push(
+          paragraph({
+            numbering: { reference: BULLET_REF, level: 0 },
+            spacing: { after: 40 },
+            children: [
+              new TextRun({
+                text: `${extra.label}: `,
+                bold: true,
+                size: 24,
+                color: RESUME_COLORS_HEX.dark,
+                font: RESUME_FONT,
+              }),
+              ...styledRuns(extra.text, { size: 24 }),
+            ],
+          })
+        );
+      }
     }
   }
 

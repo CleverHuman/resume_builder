@@ -50,6 +50,28 @@ export function formatEducationPlace(edu: Education): string {
   return parts.join(", ");
 }
 
+function normalizeEducationExtra(value: string | string[] | undefined): string {
+  if (value == null) return "";
+  if (Array.isArray(value)) return value.map((v) => v.trim()).filter(Boolean).join(", ");
+  return value.trim();
+}
+
+/**
+ * Optional john-role education bullets, e.g.
+ * [{ label: "Core Modules", text: "Distributed Systems, Cloud Computing" }, ...]
+ * Accepts snake_case or titled keys.
+ */
+export function educationExtraBullets(
+  edu: Education
+): { label: string; text: string }[] {
+  const modules = normalizeEducationExtra(edu.core_modules ?? edu["Core Modules"]);
+  const capstone = normalizeEducationExtra(edu.capstone ?? edu.Capstone);
+  const bullets: { label: string; text: string }[] = [];
+  if (modules) bullets.push({ label: "Core Modules", text: modules });
+  if (capstone) bullets.push({ label: "Capstone", text: capstone });
+  return bullets;
+}
+
 /** Normalize skills into [category, items[]][] pairs; category is "" for a flat list. */
 export function skillEntries(skills: Skills | undefined): [string, string[]][] {
   if (!skills) return [];

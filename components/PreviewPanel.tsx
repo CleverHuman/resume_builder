@@ -1,4 +1,5 @@
 import {
+  educationExtraBullets,
   formatContactLine,
   formatEducationDates,
   formatEducationPlace,
@@ -168,24 +169,42 @@ export default function PreviewPanel({
           {education.map((edu, i) => {
             const place = formatEducationPlace(edu);
             const dates = formatEducationDates(edu);
+            const extras = educationExtraBullets(edu);
             return (
-              <div key={i} className="mt-[6px] flex items-baseline justify-between gap-2">
-                <p className="text-[12pt] leading-[1.3]">
-                  {edu.degree && <strong>{edu.degree}</strong>}
-                  {edu.degree && place && (
-                    <span style={{ color: RESUME_COLORS.muted }}>  —  {place}</span>
-                  )}
-                  {!edu.degree && place && (
-                    <span style={{ color: RESUME_COLORS.muted }}>{place}</span>
-                  )}
-                </p>
-                {dates && (
-                  <p
-                    className="shrink-0 text-[11.5pt] leading-[1.3]"
-                    style={{ color: RESUME_COLORS.muted }}
-                  >
-                    {dates}
+              <div key={i} className="mt-[6px]">
+                <div className="flex items-baseline justify-between gap-2">
+                  <p className="text-[12pt] leading-[1.3]">
+                    {edu.degree && <strong>{edu.degree}</strong>}
+                    {edu.degree && place && (
+                      <span style={{ color: RESUME_COLORS.muted }}>  —  {place}</span>
+                    )}
+                    {!edu.degree && place && (
+                      <span style={{ color: RESUME_COLORS.muted }}>{place}</span>
+                    )}
                   </p>
+                  {dates && (
+                    <p
+                      className="shrink-0 text-[11.5pt] leading-[1.3]"
+                      style={{ color: RESUME_COLORS.muted }}
+                    >
+                      {dates}
+                    </p>
+                  )}
+                </div>
+                {extras.length > 0 && (
+                  <ul className="m-0 list-none p-0">
+                    {extras.map((extra, j) => (
+                      <li
+                        key={j}
+                        className="mb-[2px] pl-[14px] text-[12pt] leading-[1.35]"
+                        style={{ textIndent: "-12px" }}
+                      >
+                        <span style={{ color: RESUME_COLORS.accent }}>• </span>
+                        <strong>{extra.label}: </strong>
+                        <BoldSpans text={extra.text} />
+                      </li>
+                    ))}
+                  </ul>
                 )}
               </div>
             );
