@@ -35,11 +35,14 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 interface Props {
   data: ResumeData | null;
   emptyMessage?: string;
+  /** John-role only: Core Modules / Capstone bullets under education. */
+  showEducationExtras?: boolean;
 }
 
 export default function PreviewPanel({
   data,
   emptyMessage = "Load sample or paste resume JSON to preview",
+  showEducationExtras = false,
 }: Props) {
   if (!data) {
     return (
@@ -169,7 +172,7 @@ export default function PreviewPanel({
           {education.map((edu, i) => {
             const place = formatEducationPlace(edu);
             const dates = formatEducationDates(edu);
-            const extras = educationExtraBullets(edu);
+            const extras = showEducationExtras ? educationExtraBullets(edu) : [];
             return (
               <div key={i} className="mt-[6px]">
                 <div className="flex items-baseline justify-between gap-2">

@@ -83,7 +83,11 @@ function paragraph(options: IParagraphOptions): Paragraph {
   return new Paragraph(options);
 }
 
-export async function generateResumeDocxBlob(data: ResumeData): Promise<Blob> {
+export async function generateResumeDocxBlob(
+  data: ResumeData,
+  options: { showEducationExtras?: boolean } = {}
+): Promise<Blob> {
+  const showEducationExtras = options.showEducationExtras ?? false;
   const personal = data.personal ?? {};
   const summary = data.summary ?? personal.summary ?? "";
   const contact = formatContactLine(personal);
@@ -276,7 +280,7 @@ export async function generateResumeDocxBlob(data: ResumeData): Promise<Blob> {
     for (const edu of education) {
       const place = formatEducationPlace(edu);
       const dates = formatEducationDates(edu);
-      const extras = educationExtraBullets(edu);
+      const extras = showEducationExtras ? educationExtraBullets(edu) : [];
       const runs: TextRun[] = [];
 
       if (edu.degree) {

@@ -191,7 +191,13 @@ function BoldText({ text }: { text: string }) {
   );
 }
 
-function ResumePdfDocument({ data }: { data: ResumeData }) {
+function ResumePdfDocument({
+  data,
+  showEducationExtras,
+}: {
+  data: ResumeData;
+  showEducationExtras: boolean;
+}) {
   const personal = data.personal ?? {};
   const summary = data.summary ?? personal.summary ?? "";
   const contact = formatContactLine(personal);
@@ -274,7 +280,7 @@ function ResumePdfDocument({ data }: { data: ResumeData }) {
             {education.map((edu, i) => {
               const place = formatEducationPlace(edu);
               const dates = formatEducationDates(edu);
-              const extras = educationExtraBullets(edu);
+              const extras = showEducationExtras ? educationExtraBullets(edu) : [];
               return (
                 <View key={i}>
                   <View style={styles.eduHeader} wrap={false}>
@@ -307,6 +313,14 @@ function ResumePdfDocument({ data }: { data: ResumeData }) {
   );
 }
 
-export async function generateResumePdfBlob(data: ResumeData): Promise<Blob> {
-  return pdf(<ResumePdfDocument data={data} />).toBlob();
+export async function generateResumePdfBlob(
+  data: ResumeData,
+  options: { showEducationExtras?: boolean } = {}
+): Promise<Blob> {
+  return pdf(
+    <ResumePdfDocument
+      data={data}
+      showEducationExtras={options.showEducationExtras ?? false}
+    />
+  ).toBlob();
 }
