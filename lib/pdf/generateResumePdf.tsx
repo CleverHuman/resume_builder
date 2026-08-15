@@ -5,6 +5,7 @@ import {
   formatEducationPlace,
   formatExperienceDates,
   formatExperienceLocation,
+  formatSkillList,
   parseBoldSegments,
   skillEntries,
 } from "@/lib/resumeHelpers";
@@ -12,7 +13,6 @@ import {
   RESUME_COLORS,
   RESUME_PDF_FONT,
   RESUME_PDF_FONT_BOLD,
-  RESUME_PDF_FONT_ITALIC,
   RESUME_SECTIONS,
 } from "@/lib/resumeStyle";
 import { ResumeData } from "@/lib/types";
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     color: RESUME_COLORS.accent,
   },
   companySep: {
-    fontFamily: RESUME_PDF_FONT_ITALIC,
+    fontFamily: RESUME_PDF_FONT,
     fontSize: 11.5,
     color: RESUME_COLORS.muted,
   },
@@ -229,8 +229,8 @@ function ResumePdfDocument({
             <SectionTitle>{RESUME_SECTIONS.skills}</SectionTitle>
             {skills.map(([category, items]) => (
               <Text key={category || "flat"} style={styles.skillLine}>
-                {category && <Text style={styles.skillCategory}>{category}:  </Text>}
-                {items.join(", ")}
+                {category && <Text style={styles.skillCategory}>{category}: </Text>}
+                {formatSkillList(items)}
               </Text>
             ))}
           </View>
@@ -256,7 +256,7 @@ function ResumePdfDocument({
                         <Text style={styles.company}>{exp.company}</Text>
                       ) : null}
                       {exp.company && location ? (
-                        <Text style={styles.companySep}>  •  </Text>
+                        <Text style={styles.companySep}> | </Text>
                       ) : null}
                       {location ? <Text style={styles.location}>{location}</Text> : null}
                     </View>

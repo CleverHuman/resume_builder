@@ -5,6 +5,7 @@ import {
   formatEducationPlace,
   formatExperienceDates,
   formatExperienceLocation,
+  formatSkillList,
   parseBoldSegments,
   skillEntries,
 } from "@/lib/resumeHelpers";
@@ -105,8 +106,8 @@ export default function PreviewPanel({
           <SectionTitle>{RESUME_SECTIONS.skills}</SectionTitle>
           {skills.map(([category, items]) => (
             <p key={category || "flat"} className="mb-[2px] text-[12pt] leading-[1.35]">
-              {category && <strong>{category}:  </strong>}
-              {items.join(", ")}
+              {category && <strong>{category}: </strong>}
+              {formatSkillList(items)}
             </p>
           ))}
         </section>
@@ -139,7 +140,7 @@ export default function PreviewPanel({
                       <strong style={{ color: RESUME_COLORS.accent }}>{exp.company}</strong>
                     )}
                     {exp.company && location && (
-                      <em style={{ color: RESUME_COLORS.muted }}>  •  </em>
+                      <span style={{ color: RESUME_COLORS.muted }}> | </span>
                     )}
                     {location && <span style={{ color: RESUME_COLORS.muted }}>{location}</span>}
                   </p>
