@@ -60,7 +60,7 @@ export interface ApplicationRecord {
   id: number;
   created_at: string;
   name: string;
-  title: string;
+  title: string | null;
   job_title: string;
   company: string;
   resume: ResumeData;

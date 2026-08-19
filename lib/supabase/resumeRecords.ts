@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/client";
 import { ApplicationRecord, PersonalInfo, ResumeData } from "@/lib/types";
 
-const REQUIRED_PERSONAL_FIELDS = ["name", "title", "job_title", "company"] as const;
+const REQUIRED_PERSONAL_FIELDS = ["name", "job_title", "company"] as const;
 
 function missingRequiredFields(personal: PersonalInfo): string[] {
   return REQUIRED_PERSONAL_FIELDS.filter((f) => !personal[f]?.trim());
@@ -15,8 +15,9 @@ export type SaveResumeResult =
 
 /**
  * One row per company: inserts a new resume record, or reports "duplicate" if
- * a record for that company already exists (schema requires name/title/job_title/
- * company/resume to all be non-null, so resumes are never partially saved).
+ * a record for that company already exists (schema requires name/job_title/
+ * company/resume to be non-null; title is optional, so resumes are never
+ * partially saved).
  */
 export async function saveResumeRecord(
   resumeData: ResumeData,
@@ -49,7 +50,7 @@ export async function saveResumeRecord(
     .from(table)
     .insert({
       name: personal.name!.trim(),
-      title: personal.title!.trim(),
+      title: personal.title?.trim() || null,
       job_title: personal.job_title!.trim(),
       company,
       resume: resumeData,
