@@ -13,11 +13,11 @@ export const RESUME_COLORS_HEX = {
   muted: "555555",
 } as const;
 
-export const RESUME_FONT = "Garamond";
-/** Built-in serif fallback for @react-pdf/renderer (no custom font files). */
-export const RESUME_PDF_FONT = "Times-Roman";
-export const RESUME_PDF_FONT_BOLD = "Times-Bold";
-export const RESUME_PDF_FONT_ITALIC = "Times-Italic";
+/** Self-hosted from public/fonts (see globals.css and lib/pdf/generateResumePdf.tsx). */
+export const RESUME_FONT = "EB Garamond";
+export const RESUME_PDF_FONT = "EB Garamond";
+export const RESUME_PDF_FONT_BOLD = "EB Garamond-Bold";
+export const RESUME_PDF_FONT_ITALIC = "EB Garamond-Italic";
 
 export const RESUME_SECTIONS = {
   summary: "PROFESSIONAL SUMMARY",

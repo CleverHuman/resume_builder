@@ -13,6 +13,14 @@ export function parseBoldSegments(text: string): BoldSegment[] {
     .filter((seg) => seg.text.length > 0);
 }
 
+/** "JEREMY WYATT" -> "Jeremy Wyatt": capitalize each word's initial, lowercase the rest. */
+export function toTitleCase(name: string): string {
+  return name
+    .split(" ")
+    .map((word) => (word ? word[0].toUpperCase() + word.slice(1).toLowerCase() : word))
+    .join(" ");
+}
+
 export function formatContactLine(personal: PersonalInfo): string {
   return CONTACT_FIELDS.map((f) => personal[f])
     .filter((v): v is string => Boolean(v))

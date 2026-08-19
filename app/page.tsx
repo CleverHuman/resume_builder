@@ -13,6 +13,7 @@ import {
   showsEducationExtras,
   storeRole,
   tableForRole,
+  usesTitleCaseName,
 } from "@/lib/auth";
 import { useEffect, useState } from "react";
 
@@ -58,6 +59,7 @@ export default function Home() {
   const effectiveTab = activeTab === "applications" && !canSeeApplications ? "resume" : activeTab;
   const table = tableForRole(auth.role);
   const educationExtras = showsEducationExtras(auth.role);
+  const titleCaseName = usesTitleCaseName(auth.role);
 
   return (
     <div className="flex h-screen flex-col bg-[#1e1e2e]">
@@ -73,6 +75,7 @@ export default function Home() {
           table={table}
           onRecordIdChange={setRecordId}
           showEducationExtras={educationExtras}
+          titleCaseName={titleCaseName}
         />
       </div>
       <div className={effectiveTab === "proposal" ? "contents" : "hidden"}>
@@ -84,6 +87,7 @@ export default function Home() {
             isActive={effectiveTab === "applications"}
             table={table}
             showEducationExtras={educationExtras}
+            titleCaseName={titleCaseName}
           />
         </div>
       )}

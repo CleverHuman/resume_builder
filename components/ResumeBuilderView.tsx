@@ -24,12 +24,14 @@ interface Props {
   table: string;
   onRecordIdChange: (id: number) => void;
   showEducationExtras?: boolean;
+  titleCaseName?: boolean;
 }
 
 export default function ResumeBuilderView({
   table,
   onRecordIdChange,
   showEducationExtras = false,
+  titleCaseName = false,
 }: Props) {
   const [jsonText, setJsonText] = useState("");
   const [debouncedText, setDebouncedText] = useState("");
@@ -80,7 +82,7 @@ export default function ResumeBuilderView({
   async function handleExportPdf() {
     if (!resumeData) return;
     const { generateResumePdfBlob } = await import("@/lib/pdf/generateResumePdf");
-    const blob = await generateResumePdfBlob(resumeData, { showEducationExtras });
+    const blob = await generateResumePdfBlob(resumeData, { showEducationExtras, titleCaseName });
     const filename = buildResumeFilename(resumeData.personal ?? {}, "pdf");
     downloadBlob(blob, filename);
     flash(`Saved: ${filename}`);
@@ -108,7 +110,7 @@ export default function ResumeBuilderView({
     onRecordIdChange(result.id);
 
     const { generateResumeDocxBlob } = await import("@/lib/docx/generateResumeDocx");
-    const blob = await generateResumeDocxBlob(resumeData, { showEducationExtras });
+    const blob = await generateResumeDocxBlob(resumeData, { showEducationExtras, titleCaseName });
     const filename = buildResumeFilename(resumeData.personal ?? {}, "docx");
     downloadBlob(blob, filename);
     flash(`Saved: ${filename} (synced)`);
@@ -117,7 +119,7 @@ export default function ResumeBuilderView({
   async function handleExportDocxWithoutSave() {
     if (!resumeData) return;
     const { generateResumeDocxBlob } = await import("@/lib/docx/generateResumeDocx");
-    const blob = await generateResumeDocxBlob(resumeData, { showEducationExtras });
+    const blob = await generateResumeDocxBlob(resumeData, { showEducationExtras, titleCaseName });
     const filename = buildResumeFilename(resumeData.personal ?? {}, "docx");
     downloadBlob(blob, filename);
     flash(`Saved: ${filename} (asynchronously)`);
@@ -143,7 +145,11 @@ export default function ResumeBuilderView({
                 <span className={`text-[12px] ${STATUS_COLOR[statusKind]}`}>{status}</span>
               </div>
               <div className="min-h-0 flex-1 overflow-hidden rounded border border-[#3f3f5c] bg-[#2a2a3e]">
-                <PreviewPanel data={resumeData} showEducationExtras={showEducationExtras} />
+                <PreviewPanel
+                  data={resumeData}
+                  showEducationExtras={showEducationExtras}
+                  titleCaseName={titleCaseName}
+                />
               </div>
             </div>
           }

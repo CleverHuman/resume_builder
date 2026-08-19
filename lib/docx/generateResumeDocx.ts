@@ -8,6 +8,7 @@ import {
   formatSkillList,
   parseBoldSegments,
   skillEntries,
+  toTitleCase,
 } from "@/lib/resumeHelpers";
 import { RESUME_COLORS_HEX, RESUME_FONT, RESUME_SECTIONS } from "@/lib/resumeStyle";
 import { ResumeData } from "@/lib/types";
@@ -86,9 +87,10 @@ function paragraph(options: IParagraphOptions): Paragraph {
 
 export async function generateResumeDocxBlob(
   data: ResumeData,
-  options: { showEducationExtras?: boolean } = {}
+  options: { showEducationExtras?: boolean; titleCaseName?: boolean } = {}
 ): Promise<Blob> {
   const showEducationExtras = options.showEducationExtras ?? false;
+  const titleCaseName = options.titleCaseName ?? false;
   const personal = data.personal ?? {};
   const summary = data.summary ?? personal.summary ?? "";
   const contact = formatContactLine(personal);
@@ -105,7 +107,7 @@ export async function generateResumeDocxBlob(
         spacing: { after: 20 },
         children: [
           new TextRun({
-            text: personal.name.toUpperCase(),
+            text: titleCaseName ? toTitleCase(personal.name) : personal.name.toUpperCase(),
             bold: true,
             size: 44,
             color: RESUME_COLORS_HEX.dark,

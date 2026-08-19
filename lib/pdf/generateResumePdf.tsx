@@ -8,22 +8,29 @@ import {
   formatSkillList,
   parseBoldSegments,
   skillEntries,
+  toTitleCase,
 } from "@/lib/resumeHelpers";
 import {
   RESUME_COLORS,
   RESUME_PDF_FONT,
   RESUME_PDF_FONT_BOLD,
+  RESUME_PDF_FONT_ITALIC,
   RESUME_SECTIONS,
 } from "@/lib/resumeStyle";
 import { ResumeData } from "@/lib/types";
 import {
   Document,
+  Font,
   Page,
   pdf,
   StyleSheet,
   Text,
   View,
 } from "@react-pdf/renderer";
+
+Font.register({ family: RESUME_PDF_FONT, src: "/fonts/EBGaramond-Regular.woff" });
+Font.register({ family: RESUME_PDF_FONT_BOLD, src: "/fonts/EBGaramond-Bold.woff" });
+Font.register({ family: RESUME_PDF_FONT_ITALIC, src: "/fonts/EBGaramond-Italic.woff" });
 
 const MARGIN_X = 0.75 * 72;
 const MARGIN_Y = 0.59 * 72;
@@ -195,9 +202,11 @@ function BoldText({ text }: { text: string }) {
 function ResumePdfDocument({
   data,
   showEducationExtras,
+  titleCaseName,
 }: {
   data: ResumeData;
   showEducationExtras: boolean;
+  titleCaseName: boolean;
 }) {
   const personal = data.personal ?? {};
   const summary = data.summary ?? personal.summary ?? "";
@@ -210,7 +219,9 @@ function ResumePdfDocument({
     <Document>
       <Page size="LETTER" style={styles.page}>
         {personal.name && (
-          <Text style={styles.name}>{personal.name.toUpperCase()}</Text>
+          <Text style={styles.name}>
+            {titleCaseName ? toTitleCase(personal.name) : personal.name.toUpperCase()}
+          </Text>
         )}
         {personal.title && <Text style={styles.title}>{personal.title}</Text>}
         {contact && <Text style={styles.contact}>{contact}</Text>}
@@ -316,12 +327,13 @@ function ResumePdfDocument({
 
 export async function generateResumePdfBlob(
   data: ResumeData,
-  options: { showEducationExtras?: boolean } = {}
+  options: { showEducationExtras?: boolean; titleCaseName?: boolean } = {}
 ): Promise<Blob> {
   return pdf(
     <ResumePdfDocument
       data={data}
       showEducationExtras={options.showEducationExtras ?? false}
+      titleCaseName={options.titleCaseName ?? false}
     />
   ).toBlob();
 }

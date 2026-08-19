@@ -9,6 +9,7 @@ interface Props {
   isActive: boolean;
   table: string;
   showEducationExtras?: boolean;
+  titleCaseName?: boolean;
 }
 
 const PAGE_SIZE_OPTIONS = [10, 20, 50];
@@ -18,6 +19,7 @@ export default function ApplicationsView({
   isActive,
   table,
   showEducationExtras = false,
+  titleCaseName = false,
 }: Props) {
   const [applications, setApplications] = useState<ApplicationRecord[]>([]);
   const [totalCount, setTotalCount] = useState(0);
@@ -185,6 +187,7 @@ export default function ApplicationsView({
               data={selected?.resume ?? null}
               emptyMessage="Select an application to preview its resume"
               showEducationExtras={showEducationExtras}
+              titleCaseName={titleCaseName}
             />
           </div>
         </div>

@@ -8,6 +8,7 @@ import {
   formatSkillList,
   parseBoldSegments,
   skillEntries,
+  toTitleCase,
 } from "@/lib/resumeHelpers";
 import { RESUME_COLORS, RESUME_FONT, RESUME_SECTIONS } from "@/lib/resumeStyle";
 import { ResumeData } from "@/lib/types";
@@ -38,12 +39,15 @@ interface Props {
   emptyMessage?: string;
   /** John-role only: Core Modules / Capstone bullets under education. */
   showEducationExtras?: boolean;
+  /** Caleb-role only: header name in title case instead of all caps. */
+  titleCaseName?: boolean;
 }
 
 export default function PreviewPanel({
   data,
   emptyMessage = "Load sample or paste resume JSON to preview",
   showEducationExtras = false,
+  titleCaseName = false,
 }: Props) {
   if (!data) {
     return (
@@ -73,7 +77,7 @@ export default function PreviewPanel({
           className="mb-[2px] text-center text-[22pt] font-bold leading-[1.2]"
           style={{ color: RESUME_COLORS.dark }}
         >
-          {personal.name.toUpperCase()}
+          {titleCaseName ? toTitleCase(personal.name) : personal.name.toUpperCase()}
         </h1>
       )}
 
