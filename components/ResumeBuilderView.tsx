@@ -1,6 +1,7 @@
 "use client";
 
 import BottomBar from "@/components/BottomBar";
+import CalebPreviewPanel from "@/components/CalebPreviewPanel";
 import JsonEditorPanel from "@/components/JsonEditorPanel";
 import PreviewPanel from "@/components/PreviewPanel";
 import ResizableSplit from "@/components/ResizableSplit";
@@ -26,6 +27,7 @@ interface Props {
   onCompanyChange: (company: string) => void;
   showEducationExtras?: boolean;
   titleCaseName?: boolean;
+  calebStyle?: boolean;
 }
 
 export default function ResumeBuilderView({
@@ -34,6 +36,7 @@ export default function ResumeBuilderView({
   onCompanyChange,
   showEducationExtras = false,
   titleCaseName = false,
+  calebStyle = false,
 }: Props) {
   const [jsonText, setJsonText] = useState("");
   const [debouncedText, setDebouncedText] = useState("");
@@ -83,8 +86,11 @@ export default function ResumeBuilderView({
 
   async function handleExportPdf() {
     if (!resumeData) return;
-    const { generateResumePdfBlob } = await import("@/lib/pdf/generateResumePdf");
-    const blob = await generateResumePdfBlob(resumeData, { showEducationExtras, titleCaseName });
+    const blob = calebStyle
+      ? await (await import("@/lib/pdf/generateCalebResumePdf")).generateCalebResumePdfBlob(resumeData)
+      : await (
+          await import("@/lib/pdf/generateResumePdf")
+        ).generateResumePdfBlob(resumeData, { showEducationExtras, titleCaseName });
     const filename = buildResumeFilename(resumeData.personal ?? {}, "pdf");
     downloadBlob(blob, filename);
     flash(`Saved: ${filename}`);
@@ -114,8 +120,13 @@ export default function ResumeBuilderView({
       onCompanyChange(resumeData.personal.company);
     }
 
-    const { generateResumeDocxBlob } = await import("@/lib/docx/generateResumeDocx");
-    const blob = await generateResumeDocxBlob(resumeData, { showEducationExtras, titleCaseName });
+    const blob = calebStyle
+      ? await (
+          await import("@/lib/docx/generateCalebResumeDocx")
+        ).generateCalebResumeDocxBlob(resumeData)
+      : await (
+          await import("@/lib/docx/generateResumeDocx")
+        ).generateResumeDocxBlob(resumeData, { showEducationExtras, titleCaseName });
     const filename = buildResumeFilename(resumeData.personal ?? {}, "docx");
     downloadBlob(blob, filename);
     flash(`Saved: ${filename} (synced)`);
@@ -123,8 +134,13 @@ export default function ResumeBuilderView({
 
   async function handleExportDocxWithoutSave() {
     if (!resumeData) return;
-    const { generateResumeDocxBlob } = await import("@/lib/docx/generateResumeDocx");
-    const blob = await generateResumeDocxBlob(resumeData, { showEducationExtras, titleCaseName });
+    const blob = calebStyle
+      ? await (
+          await import("@/lib/docx/generateCalebResumeDocx")
+        ).generateCalebResumeDocxBlob(resumeData)
+      : await (
+          await import("@/lib/docx/generateResumeDocx")
+        ).generateResumeDocxBlob(resumeData, { showEducationExtras, titleCaseName });
     const filename = buildResumeFilename(resumeData.personal ?? {}, "docx");
     downloadBlob(blob, filename);
     flash(`Saved: ${filename} (asynchronously)`);
@@ -150,11 +166,15 @@ export default function ResumeBuilderView({
                 <span className={`text-[12px] ${STATUS_COLOR[statusKind]}`}>{status}</span>
               </div>
               <div className="min-h-0 flex-1 overflow-hidden rounded border border-[#3f3f5c] bg-[#2a2a3e]">
-                <PreviewPanel
-                  data={resumeData}
-                  showEducationExtras={showEducationExtras}
-                  titleCaseName={titleCaseName}
-                />
+                {calebStyle ? (
+                  <CalebPreviewPanel data={resumeData} />
+                ) : (
+                  <PreviewPanel
+                    data={resumeData}
+                    showEducationExtras={showEducationExtras}
+                    titleCaseName={titleCaseName}
+                  />
+                )}
               </div>
             </div>
           }

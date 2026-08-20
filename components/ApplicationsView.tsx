@@ -1,6 +1,7 @@
 "use client";
 
 import PreviewPanel from "@/components/PreviewPanel";
+import CalebPreviewPanel from "@/components/CalebPreviewPanel";
 import ProposalPreviewPanel from "@/components/ProposalPreviewPanel";
 import { ApplicationRecord } from "@/lib/types";
 import { useEffect, useRef, useState } from "react";
@@ -10,6 +11,7 @@ interface Props {
   table: string;
   showEducationExtras?: boolean;
   titleCaseName?: boolean;
+  calebStyle?: boolean;
 }
 
 const PAGE_SIZE_OPTIONS = [10, 20, 50];
@@ -20,6 +22,7 @@ export default function ApplicationsView({
   table,
   showEducationExtras = false,
   titleCaseName = false,
+  calebStyle = false,
 }: Props) {
   const [applications, setApplications] = useState<ApplicationRecord[]>([]);
   const [totalCount, setTotalCount] = useState(0);
@@ -183,12 +186,19 @@ export default function ApplicationsView({
             </button>
           </div>
           <div className="flex-1 min-h-0 overflow-hidden rounded border border-[#3f3f5c] bg-[#2a2a3e]">
-            <PreviewPanel
-              data={selected?.resume ?? null}
-              emptyMessage="Select an application to preview its resume"
-              showEducationExtras={showEducationExtras}
-              titleCaseName={titleCaseName}
-            />
+            {calebStyle ? (
+              <CalebPreviewPanel
+                data={selected?.resume ?? null}
+                emptyMessage="Select an application to preview its resume"
+              />
+            ) : (
+              <PreviewPanel
+                data={selected?.resume ?? null}
+                emptyMessage="Select an application to preview its resume"
+                showEducationExtras={showEducationExtras}
+                titleCaseName={titleCaseName}
+              />
+            )}
           </div>
         </div>
 
