@@ -23,6 +23,7 @@ const STATUS_COLOR: Record<StatusKind, string> = {
 interface Props {
   table: string;
   onRecordIdChange: (id: number) => void;
+  onCompanyChange: (company: string) => void;
   showEducationExtras?: boolean;
   titleCaseName?: boolean;
 }
@@ -30,6 +31,7 @@ interface Props {
 export default function ResumeBuilderView({
   table,
   onRecordIdChange,
+  onCompanyChange,
   showEducationExtras = false,
   titleCaseName = false,
 }: Props) {
@@ -108,6 +110,9 @@ export default function ResumeBuilderView({
     }
 
     onRecordIdChange(result.id);
+    if (resumeData.personal?.company) {
+      onCompanyChange(resumeData.personal.company);
+    }
 
     const { generateResumeDocxBlob } = await import("@/lib/docx/generateResumeDocx");
     const blob = await generateResumeDocxBlob(resumeData, { showEducationExtras, titleCaseName });

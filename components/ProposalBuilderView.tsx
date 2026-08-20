@@ -5,14 +5,16 @@ import ProposalPreviewPanel from "@/components/ProposalPreviewPanel";
 import ProposalTextPanel from "@/components/ProposalTextPanel";
 import ResizableSplit from "@/components/ResizableSplit";
 import { downloadBlob } from "@/lib/downloadBlob";
+import { buildCoverLetterFilename } from "@/lib/resumeHelpers";
 import { useRef, useState } from "react";
 
 interface Props {
   recordId: number | null;
   table: string;
+  company: string | null;
 }
 
-export default function ProposalBuilderView({ recordId, table }: Props) {
+export default function ProposalBuilderView({ recordId, table, company }: Props) {
   const [text, setText] = useState("");
   const [flashMessage, setFlashMessage] = useState("");
   const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -40,7 +42,7 @@ export default function ProposalBuilderView({ recordId, table }: Props) {
 
     const { generateProposalPdfBlob } = await import("@/lib/pdf/generateProposalPdf");
     const blob = await generateProposalPdfBlob(text);
-    const filename = "cover letter.pdf";
+    const filename = buildCoverLetterFilename(company, "pdf");
     downloadBlob(blob, filename);
     flash(
       result.status === "error"

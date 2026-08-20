@@ -100,3 +100,10 @@ export function buildResumeFilename(personal: PersonalInfo, ext: string): string
   if (personal.company) base += `_${slug(personal.company)}`;
   return `${base}.${ext}`;
 }
+
+/** "cover_letter_company.ext", degrading to "cover_letter.ext" when company is absent. */
+export function buildCoverLetterFilename(company: string | undefined | null, ext: string): string {
+  const slug = (s: string) => s.trim().replace(/\s+/g, "_");
+  const base = company?.trim() ? `cover_letter_${slug(company)}` : "cover_letter";
+  return `${base}.${ext}`;
+}

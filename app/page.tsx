@@ -25,6 +25,8 @@ export default function Home() {
   // Id of the resume record inserted on DOCX export; the Proposal tab needs it
   // to attach the cover letter to the right row.
   const [recordId, setRecordId] = useState<number | null>(null);
+  // Company of that same record; the Proposal tab needs it to name the cover letter file.
+  const [company, setCompany] = useState<string | null>(null);
 
   useEffect(() => {
     // Deferred so the effect body itself never synchronously triggers setState.
@@ -45,6 +47,7 @@ export default function Home() {
     setAuth({ status: "loggedOut" });
     setActiveTab("resume");
     setRecordId(null); // tied to the previous role's table; irrelevant after switching accounts
+    setCompany(null);
   }
 
   if (auth.status === "checking") {
@@ -74,12 +77,13 @@ export default function Home() {
         <ResumeBuilderView
           table={table}
           onRecordIdChange={setRecordId}
+          onCompanyChange={setCompany}
           showEducationExtras={educationExtras}
           titleCaseName={titleCaseName}
         />
       </div>
       <div className={effectiveTab === "proposal" ? "contents" : "hidden"}>
-        <ProposalBuilderView recordId={recordId} table={table} />
+        <ProposalBuilderView recordId={recordId} table={table} company={company} />
       </div>
       {canSeeApplications && (
         <div className={effectiveTab === "applications" ? "contents" : "hidden"}>
