@@ -27,6 +27,40 @@ export function formatContactLine(personal: PersonalInfo): string {
     .join("  |  ");
 }
 
+/** Caleb header contact: location • phone • email (linkedin is a separate line). */
+export function formatCalebContactLine(personal: PersonalInfo): string {
+  return [personal.location, personal.phone, personal.email]
+    .filter((v): v is string => Boolean(v?.trim()))
+    .join("  •  ");
+}
+
+/** Strip protocol/trailing slash for a clean LinkedIn display line. */
+export function formatCalebLinkedIn(personal: PersonalInfo): string {
+  const raw = personal.linkedin?.trim();
+  if (!raw) return "";
+  return raw.replace(/^https?:\/\//i, "").replace(/\/$/, "");
+}
+
+/** Join skill names with commas (Caleb sample style). */
+export function formatCalebSkillList(items: string[]): string {
+  return items.join(", ");
+}
+
+/**
+ * Whether to print the company+location header for this experience row.
+ * Consecutive entries with the same company share one header (Caleb sample).
+ */
+export function shouldShowCompanyHeader(
+  experience: Experience[],
+  index: number
+): boolean {
+  const company = experience[index]?.company?.trim().toLowerCase() ?? "";
+  if (!company) return Boolean(experience[index]?.location);
+  if (index === 0) return true;
+  const prev = experience[index - 1]?.company?.trim().toLowerCase() ?? "";
+  return prev !== company;
+}
+
 /** En-dash date range, e.g. "Mar 2023 – Present". */
 export function formatDateRange(start?: string, end?: string): string {
   if (!start && !end) return "";

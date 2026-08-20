@@ -47,6 +47,11 @@ export function usesTitleCaseName(role: Role): boolean {
   return role === "caleb";
 }
 
+/** Caleb-only: Calibri grayscale layout (company-first experience, etc.). */
+export function usesCalebResumeStyle(role: Role): boolean {
+  return role === "caleb";
+}
+
 const STORAGE_KEY = "resumeApp.authRole";
 
 export function loadStoredRole(): Role | null {
