@@ -113,13 +113,30 @@ export async function generateCalebResumeDocxBlob(data: ResumeData): Promise<Blo
     children.push(
       paragraph({
         alignment: AlignmentType.CENTER,
-        spacing: { after: 40 },
+        spacing: { after: personal.title ? 20 : 40 },
         children: [
           new TextRun({
             text: toTitleCase(personal.name),
             bold: true,
             size: 40,
             color: CALEB_COLORS_HEX.name,
+            font: CALEB_FONT,
+          }),
+        ],
+      })
+    );
+  }
+
+  if (personal.title) {
+    children.push(
+      paragraph({
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 40 },
+        children: [
+          new TextRun({
+            text: personal.title,
+            size: 22,
+            color: CALEB_COLORS_HEX.dark,
             font: CALEB_FONT,
           }),
         ],

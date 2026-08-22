@@ -39,6 +39,13 @@ const styles = StyleSheet.create({
     marginBottom: 2,
     color: CALEB_COLORS.name,
   },
+  title: {
+    fontFamily: CALEB_PDF_FONT,
+    fontSize: 11,
+    textAlign: "center",
+    marginBottom: 2,
+    color: CALEB_COLORS.dark,
+  },
   contact: {
     fontFamily: CALEB_PDF_FONT,
     fontSize: 10,
@@ -169,6 +176,7 @@ function CalebResumePdfDocument({ data }: { data: ResumeData }) {
         {personal.name && (
           <Text style={styles.name}>{toTitleCase(personal.name)}</Text>
         )}
+        {personal.title ? <Text style={styles.title}>{personal.title}</Text> : null}
         {contact ? <Text style={styles.contact}>{contact}</Text> : null}
         {linkedin ? <Text style={styles.linkedin}>{linkedin}</Text> : null}
 

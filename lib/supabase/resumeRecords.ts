@@ -147,3 +147,20 @@ export async function listApplications({
     error: error?.message ?? null,
   };
 }
+
+export type DeleteApplicationResult =
+  | { status: "error"; error: string }
+  | { status: "deleted" };
+
+/** Permanently removes one application row by id. */
+export async function deleteApplicationRecord(
+  id: number,
+  table: string
+): Promise<DeleteApplicationResult> {
+  const supabase = createClient();
+  const { error } = await supabase.from(table).delete().eq("id", id);
+  if (error) {
+    return { status: "error", error: error.message };
+  }
+  return { status: "deleted" };
+}

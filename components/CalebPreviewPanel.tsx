@@ -76,6 +76,15 @@ export default function CalebPreviewPanel({
         </h1>
       )}
 
+      {personal.title && (
+        <p
+          className="mb-[2px] text-center text-[11pt] leading-[1.2]"
+          style={{ color: CALEB_COLORS.dark }}
+        >
+          {personal.title}
+        </p>
+      )}
+
       {contact && (
         <p className="mb-[1px] text-center text-[10pt]" style={{ color: CALEB_COLORS.muted }}>
           {contact}
