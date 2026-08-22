@@ -42,14 +42,14 @@ export function showsEducationExtras(role: Role): boolean {
   return role === "john";
 }
 
-/** Caleb-only: render the header name in title case ("Caleb Tallquist") instead of all caps. */
+/** Title-case header name (Caleb / Jay Calibri layout). */
 export function usesTitleCaseName(role: Role): boolean {
-  return role === "caleb";
+  return role === "caleb" || role === "jay";
 }
 
-/** Caleb-only: Calibri grayscale layout (company-first experience, etc.). */
+/** Calibri grayscale layout (company-first experience, etc.). */
 export function usesCalebResumeStyle(role: Role): boolean {
-  return role === "caleb";
+  return role === "caleb" || role === "jay";
 }
 
 const STORAGE_KEY = "resumeApp.authRole";
