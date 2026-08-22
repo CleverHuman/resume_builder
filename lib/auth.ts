@@ -1,4 +1,4 @@
-export type Role = "user" | "jay" | "super" | "john" | "caleb";
+export type Role = "user" | "jay" | "daniel" | "john" | "caleb";
 
 interface Credential {
   username: string;
@@ -9,7 +9,7 @@ interface Credential {
 const CREDENTIALS: Credential[] = [
   { username: "bidder", password: "qwe123QWE!@#", role: "user" },
   { username: "jay", password: "qwe123QWE!@#", role: "jay" },
-  { username: "super", password: "qwe123QWE!@#", role: "super" },
+  { username: "daniel", password: "qwe123QWE!@#", role: "daniel" },
   { username: "john", password: "qwe123QWE!@#", role: "john" },
   { username: "caleb", password: "qwe123QWE!@#", role: "caleb" },
 ];
@@ -26,7 +26,7 @@ export function authenticate(username: string, password: string): Role | null {
  * are case-folded to lowercase by Postgres, so `resumeV1` in SQL created `resumev1`.
  */
 export function tableForRole(role: Role): string {
-  if (role === "super") return "resumev1";
+  if (role === "daniel") return "resumev1";
   if (role === "john") return "euresumev0";
   if (role === "caleb") return "caleb";
   return "resume";
@@ -34,7 +34,7 @@ export function tableForRole(role: Role): string {
 
 /** Roles that can open the Applications tab. */
 export function canSeeApplications(role: Role): boolean {
-  return role === "jay" || role === "super" || role === "john" || role === "caleb";
+  return role === "jay" || role === "daniel" || role === "john" || role === "caleb";
 }
 
 /** John-only: render Core Modules / Capstone under education. */
@@ -57,7 +57,7 @@ const STORAGE_KEY = "resumeApp.authRole";
 export function loadStoredRole(): Role | null {
   if (typeof window === "undefined") return null;
   const value = localStorage.getItem(STORAGE_KEY);
-  return value === "user" || value === "jay" || value === "super" || value === "john" || value === "caleb"
+  return value === "user" || value === "jay" || value === "daniel" || value === "john" || value === "caleb"
     ? value
     : null;
 }
