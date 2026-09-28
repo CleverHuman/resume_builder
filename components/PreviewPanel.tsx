@@ -126,17 +126,19 @@ export default function PreviewPanel({
             return (
               <div key={i} className="mb-[2px]">
                 {(exp.position || dates) && (
-                  <div className="mt-[8px] mb-[1px] flex items-baseline justify-between gap-2">
-                    <p className="text-[12.5pt] font-bold leading-[1.3]">{exp.position}</p>
-                    {dates && (
-                      <p
-                        className="shrink-0 text-[11.5pt] leading-[1.3]"
-                        style={{ color: RESUME_COLORS.muted }}
-                      >
-                        {dates}
-                      </p>
+                  <p className="mt-[8px] mb-[1px] text-[12.5pt] font-bold leading-[1.3]">
+                    {exp.position}
+                    {exp.position && dates && (
+                      <span className="font-normal" style={{ color: RESUME_COLORS.muted }}>
+                        {"  |  "}
+                      </span>
                     )}
-                  </div>
+                    {dates && (
+                      <span className="text-[11.5pt] font-normal" style={{ color: RESUME_COLORS.muted }}>
+                        {dates}
+                      </span>
+                    )}
+                  </p>
                 )}
                 {(exp.company || location) && (
                   <p className="mb-[3px] text-[12pt] leading-[1.3]">
@@ -180,25 +182,21 @@ export default function PreviewPanel({
             const extras = showEducationExtras ? educationExtraBullets(edu) : [];
             return (
               <div key={i} className="mt-[6px]">
-                <div className="flex items-baseline justify-between gap-2 mb-[3px]">
-                  <p className="text-[12pt] leading-[1.3]">
-                    {edu.degree && <strong>{edu.degree}</strong>}
-                    {edu.degree && place && (
-                      <span style={{ color: RESUME_COLORS.muted }}>  —  {place}</span>
-                    )}
-                    {!edu.degree && place && (
-                      <span style={{ color: RESUME_COLORS.muted }}>{place}</span>
-                    )}
-                  </p>
-                  {dates && (
-                    <p
-                      className="shrink-0 text-[11.5pt] leading-[1.3]"
-                      style={{ color: RESUME_COLORS.muted }}
-                    >
-                      {dates}
-                    </p>
+                <p className="mb-[3px] text-[12pt] leading-[1.3]">
+                  {edu.degree && <strong>{edu.degree}</strong>}
+                  {edu.degree && place && (
+                    <span style={{ color: RESUME_COLORS.muted }}>  —  {place}</span>
                   )}
-                </div>
+                  {!edu.degree && place && (
+                    <span style={{ color: RESUME_COLORS.muted }}>{place}</span>
+                  )}
+                  {dates && (
+                    <span className="text-[11.5pt]" style={{ color: RESUME_COLORS.muted }}>
+                      {(edu.degree || place) && "  |  "}
+                      {dates}
+                    </span>
+                  )}
+                </p>
                 {extras.length > 0 && (
                   <ul className="m-0 list-none p-0">
                     {extras.map((extra, j) => (

@@ -21,13 +21,11 @@ import {
   LevelFormat,
   Packer,
   Paragraph,
-  TabStopType,
   TextRun,
 } from "docx";
 
 const MARGIN_X = convertInchesToTwip(0.75);
 const MARGIN_Y = convertInchesToTwip(0.59);
-const CONTENT_WIDTH = convertInchesToTwip(8.5) - MARGIN_X * 2;
 const BULLET_REF = "resume-blue-bullets";
 
 function sectionHeader(title: string): Paragraph {
@@ -210,10 +208,9 @@ export async function generateResumeDocxBlob(
           );
         }
         if (dates) {
-          runs.push(new TextRun({ text: "\t", font: RESUME_FONT }));
           runs.push(
             new TextRun({
-              text: dates,
+              text: exp.position ? `  |  ${dates}` : dates,
               size: 23,
               color: RESUME_COLORS_HEX.muted,
               font: RESUME_FONT,
@@ -223,7 +220,6 @@ export async function generateResumeDocxBlob(
         children.push(
           paragraph({
             spacing: { before: 120, after: 20 },
-            tabStops: [{ type: TabStopType.RIGHT, position: CONTENT_WIDTH }],
             children: runs,
           })
         );
@@ -307,10 +303,9 @@ export async function generateResumeDocxBlob(
         );
       }
       if (dates) {
-        runs.push(new TextRun({ text: "\t", font: RESUME_FONT }));
         runs.push(
           new TextRun({
-            text: dates,
+            text: edu.degree || place ? `  |  ${dates}` : dates,
             size: 23,
             color: RESUME_COLORS_HEX.muted,
             font: RESUME_FONT,
@@ -321,7 +316,6 @@ export async function generateResumeDocxBlob(
       children.push(
         paragraph({
           spacing: { before: 80, after: extras.length > 0 ? 40 : 0 },
-          tabStops: [{ type: TabStopType.RIGHT, position: CONTENT_WIDTH }],
           children: runs,
         })
       );

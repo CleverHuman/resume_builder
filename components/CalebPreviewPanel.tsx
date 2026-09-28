@@ -127,39 +127,31 @@ export default function CalebPreviewPanel({
             return (
               <div key={i} className="mb-[2px]">
                 {showCompany && (exp.company || location) && (
-                  <div className="mt-[8px] flex items-baseline justify-between gap-2">
-                    <p className="text-[10.5pt] font-bold leading-[1.3]">{exp.company}</p>
+                  <p className="mt-[8px] text-[10.5pt] font-bold leading-[1.3]">
+                    {exp.company}
                     {location && (
-                      <p
-                        className="shrink-0 text-[10pt] leading-[1.3]"
-                        style={{ color: CALEB_COLORS.muted }}
-                      >
+                      <span className="text-[10pt] font-normal" style={{ color: CALEB_COLORS.muted }}>
+                        {exp.company ? "  |  " : ""}
                         {location}
-                      </p>
+                      </span>
                     )}
-                  </div>
+                  </p>
                 )}
                 {(exp.position || dates) && (
-                  <div
-                    className={`mb-[3px] flex items-baseline justify-between gap-2 ${
+                  <p
+                    className={`mb-[3px] text-[10pt] font-bold italic leading-[1.3] ${
                       showCompany ? "mt-[1px]" : "mt-[8px]"
                     }`}
+                    style={{ color: CALEB_COLORS.position }}
                   >
-                    <p
-                      className="text-[10pt] font-bold italic leading-[1.3]"
-                      style={{ color: CALEB_COLORS.position }}
-                    >
-                      {exp.position}
-                    </p>
+                    {exp.position}
                     {dates && (
-                      <p
-                        className="shrink-0 text-[10pt] leading-[1.3]"
-                        style={{ color: CALEB_COLORS.muted }}
-                      >
+                      <span className="not-italic font-normal" style={{ color: CALEB_COLORS.muted }}>
+                        {exp.position ? "  |  " : ""}
                         {dates}
-                      </p>
+                      </span>
                     )}
-                  </div>
+                  </p>
                 )}
                 {exp.highlights && exp.highlights.length > 0 && (
                   <ul className="m-0 list-none p-0">
@@ -189,35 +181,29 @@ export default function CalebPreviewPanel({
             return (
               <div key={i} className="mt-[8px]">
                 {(edu.institution || edu.location) && (
-                  <div className="flex items-baseline justify-between gap-2">
-                    <p className="text-[10.5pt] font-bold leading-[1.3]">{edu.institution}</p>
+                  <p className="text-[10.5pt] font-bold leading-[1.3]">
+                    {edu.institution}
                     {edu.location && (
-                      <p
-                        className="shrink-0 text-[10pt] leading-[1.3]"
-                        style={{ color: CALEB_COLORS.muted }}
-                      >
+                      <span className="text-[10pt] font-normal" style={{ color: CALEB_COLORS.muted }}>
+                        {edu.institution ? "  |  " : ""}
                         {edu.location}
-                      </p>
+                      </span>
                     )}
-                  </div>
+                  </p>
                 )}
                 {(edu.degree || dates) && (
-                  <div className="mt-[1px] flex items-baseline justify-between gap-2">
-                    <p
-                      className="text-[10pt] font-bold italic leading-[1.3]"
-                      style={{ color: CALEB_COLORS.position }}
-                    >
-                      {edu.degree}
-                    </p>
+                  <p
+                    className="mt-[1px] text-[10pt] font-bold italic leading-[1.3]"
+                    style={{ color: CALEB_COLORS.position }}
+                  >
+                    {edu.degree}
                     {dates && (
-                      <p
-                        className="shrink-0 text-[10pt] leading-[1.3]"
-                        style={{ color: CALEB_COLORS.muted }}
-                      >
+                      <span className="not-italic font-normal" style={{ color: CALEB_COLORS.muted }}>
+                        {edu.degree ? "  |  " : ""}
                         {dates}
-                      </p>
+                      </span>
                     )}
-                  </div>
+                  </p>
                 )}
               </div>
             );

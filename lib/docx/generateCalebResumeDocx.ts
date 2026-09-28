@@ -21,13 +21,11 @@ import {
   LevelFormat,
   Packer,
   Paragraph,
-  TabStopType,
   TextRun,
 } from "docx";
 
 const MARGIN_X = convertInchesToTwip(0.6);
 const MARGIN_Y = convertInchesToTwip(0.5);
-const CONTENT_WIDTH = convertInchesToTwip(8.5) - MARGIN_X * 2;
 const BULLET_REF = "caleb-bullets";
 
 function sectionHeader(title: string): Paragraph {
@@ -74,17 +72,16 @@ function paragraph(options: IParagraphOptions): Paragraph {
   return new Paragraph(options);
 }
 
-function rightTabRow(
+function spacedRow(
   leftRuns: TextRun[],
   rightText: string | undefined,
   spacing: { before?: number; after?: number }
 ): Paragraph {
   const runs = [...leftRuns];
   if (rightText) {
-    runs.push(new TextRun({ text: "\t", font: CALEB_FONT }));
     runs.push(
       new TextRun({
-        text: rightText,
+        text: `  |  ${rightText}`,
         size: 20,
         color: CALEB_COLORS_HEX.muted,
         font: CALEB_FONT,
@@ -93,7 +90,6 @@ function rightTabRow(
   }
   return paragraph({
     spacing,
-    tabStops: [{ type: TabStopType.RIGHT, position: CONTENT_WIDTH }],
     children: runs,
   });
 }
@@ -225,7 +221,7 @@ export async function generateCalebResumeDocxBlob(data: ResumeData): Promise<Blo
 
       if (showCompany && (exp.company || location)) {
         children.push(
-          rightTabRow(
+          spacedRow(
             [
               new TextRun({
                 text: exp.company ?? "",
@@ -243,7 +239,7 @@ export async function generateCalebResumeDocxBlob(data: ResumeData): Promise<Blo
 
       if (exp.position || dates) {
         children.push(
-          rightTabRow(
+          spacedRow(
             [
               new TextRun({
                 text: exp.position ?? "",
@@ -279,7 +275,7 @@ export async function generateCalebResumeDocxBlob(data: ResumeData): Promise<Blo
 
       if (edu.institution || edu.location) {
         children.push(
-          rightTabRow(
+          spacedRow(
             [
               new TextRun({
                 text: edu.institution ?? "",
@@ -297,7 +293,7 @@ export async function generateCalebResumeDocxBlob(data: ResumeData): Promise<Blo
 
       if (edu.degree || dates) {
         children.push(
-          rightTabRow(
+          spacedRow(
             [
               new TextRun({
                 text: edu.degree ?? "",

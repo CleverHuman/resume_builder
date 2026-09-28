@@ -95,9 +95,6 @@ const styles = StyleSheet.create({
     fontFamily: RESUME_PDF_FONT_BOLD,
   },
   expHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "baseline",
     marginTop: 8,
     marginBottom: 1,
   },
@@ -105,9 +102,6 @@ const styles = StyleSheet.create({
     fontFamily: RESUME_PDF_FONT_BOLD,
     fontSize: 12.5,
     color: RESUME_COLORS.dark,
-    flexGrow: 1,
-    flexShrink: 1,
-    paddingRight: 8,
   },
   dates: {
     fontFamily: RESUME_PDF_FONT,
@@ -156,9 +150,6 @@ const styles = StyleSheet.create({
     fontFamily: RESUME_PDF_FONT_BOLD,
   },
   eduHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "baseline",
     marginTop: 6,
     marginBottom: 4,
   },
@@ -256,10 +247,15 @@ function ResumePdfDocument({
               return (
                 <View key={i} wrap={false}>
                   {(exp.position || dates) && (
-                    <View style={styles.expHeader}>
-                      <Text style={styles.position}>{exp.position ?? ""}</Text>
-                      {dates ? <Text style={styles.dates}>{dates}</Text> : null}
-                    </View>
+                    <Text style={styles.expHeader}>
+                      {exp.position ? <Text style={styles.position}>{exp.position}</Text> : null}
+                      {dates ? (
+                        <Text style={styles.dates}>
+                          {exp.position ? "  |  " : ""}
+                          {dates}
+                        </Text>
+                      ) : null}
+                    </Text>
                   )}
                   {(exp.company || location) && (
                     <View style={styles.companyRow}>
@@ -295,17 +291,20 @@ function ResumePdfDocument({
               const extras = showEducationExtras ? educationExtraBullets(edu) : [];
               return (
                 <View key={i}>
-                  <View style={styles.eduHeader} wrap={false}>
-                    <Text style={{ flex: 1, paddingRight: 8 }}>
-                      {edu.degree ? <Text style={styles.eduDegree}>{edu.degree}</Text> : null}
-                      {edu.degree && place ? (
-                        <Text style={styles.eduPlace}>  —  {place}</Text>
-                      ) : place ? (
-                        <Text style={styles.eduPlace}>{place}</Text>
-                      ) : null}
-                    </Text>
-                    {dates ? <Text style={styles.dates}>{dates}</Text> : null}
-                  </View>
+                  <Text style={styles.eduHeader} wrap={false}>
+                    {edu.degree ? <Text style={styles.eduDegree}>{edu.degree}</Text> : null}
+                    {edu.degree && place ? (
+                      <Text style={styles.eduPlace}>  —  {place}</Text>
+                    ) : place ? (
+                      <Text style={styles.eduPlace}>{place}</Text>
+                    ) : null}
+                    {dates ? (
+                      <Text style={styles.dates}>
+                        {edu.degree || place ? "  |  " : ""}
+                        {dates}
+                      </Text>
+                    ) : null}
+                  </Text>
                   {extras.map((extra, j) => (
                     <View key={j} style={styles.bulletRow} wrap={false}>
                       <Text style={styles.bulletMark}>•</Text>

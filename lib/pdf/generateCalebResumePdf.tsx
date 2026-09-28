@@ -89,24 +89,18 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    flexWrap: "wrap",
     alignItems: "baseline",
   },
   company: {
     fontFamily: CALEB_PDF_FONT_BOLD,
     fontSize: 10.5,
     color: CALEB_COLORS.body,
-    flexGrow: 1,
-    flexShrink: 1,
-    paddingRight: 8,
   },
   position: {
     fontFamily: CALEB_PDF_FONT_BOLD_ITALIC,
     fontSize: 10,
     color: CALEB_COLORS.position,
-    flexGrow: 1,
-    flexShrink: 1,
-    paddingRight: 8,
   },
   mutedRight: {
     fontFamily: CALEB_PDF_FONT,
@@ -211,21 +205,31 @@ function CalebResumePdfDocument({ data }: { data: ResumeData }) {
               return (
                 <View key={i} wrap={false}>
                   {showCompany && (exp.company || location) && (
-                    <View style={[styles.row, { marginTop: 8 }]}>
+                    <Text style={[styles.row, { marginTop: 8 }]}>
                       <Text style={styles.company}>{exp.company ?? ""}</Text>
-                      {location ? <Text style={styles.mutedRight}>{location}</Text> : null}
-                    </View>
+                      {location ? (
+                        <Text style={styles.mutedRight}>
+                          {exp.company ? "  |  " : ""}
+                          {location}
+                        </Text>
+                      ) : null}
+                    </Text>
                   )}
                   {(exp.position || dates) && (
-                    <View
+                    <Text
                       style={[
                         styles.row,
                         { marginTop: showCompany ? 1 : 8, marginBottom: 3 },
                       ]}
                     >
-                      <Text style={styles.position}>{exp.position ?? ""}</Text>
-                      {dates ? <Text style={styles.mutedRight}>{dates}</Text> : null}
-                    </View>
+                      {exp.position ? <Text style={styles.position}>{exp.position}</Text> : null}
+                      {dates ? (
+                        <Text style={styles.mutedRight}>
+                          {exp.position ? "  |  " : ""}
+                          {dates}
+                        </Text>
+                      ) : null}
+                    </Text>
                   )}
                   {(exp.highlights ?? []).map((hl, j) => (
                     <View key={j} style={styles.bulletRow}>
@@ -249,18 +253,26 @@ function CalebResumePdfDocument({ data }: { data: ResumeData }) {
               return (
                 <View key={i} wrap={false}>
                   {(edu.institution || edu.location) && (
-                    <View style={[styles.row, { marginTop: 8 }]}>
+                    <Text style={[styles.row, { marginTop: 8 }]}>
                       <Text style={styles.company}>{edu.institution ?? ""}</Text>
                       {edu.location ? (
-                        <Text style={styles.mutedRight}>{edu.location}</Text>
+                        <Text style={styles.mutedRight}>
+                          {edu.institution ? "  |  " : ""}
+                          {edu.location}
+                        </Text>
                       ) : null}
-                    </View>
+                    </Text>
                   )}
                   {(edu.degree || dates) && (
-                    <View style={[styles.row, { marginTop: 1, marginBottom: 3 }]}>
-                      <Text style={styles.position}>{edu.degree ?? ""}</Text>
-                      {dates ? <Text style={styles.mutedRight}>{dates}</Text> : null}
-                    </View>
+                    <Text style={[styles.row, { marginTop: 1, marginBottom: 3 }]}>
+                      {edu.degree ? <Text style={styles.position}>{edu.degree}</Text> : null}
+                      {dates ? (
+                        <Text style={styles.mutedRight}>
+                          {edu.degree ? "  |  " : ""}
+                          {dates}
+                        </Text>
+                      ) : null}
+                    </Text>
                   )}
                 </View>
               );
