@@ -58,3 +58,51 @@ export const CALEB_SECTIONS = {
   experience: "PROFESSIONAL EXPERIENCE",
   education: "EDUCATION",
 } as const;
+
+/** Original Calibri / black-rule layout (pre–Bin Liu Garamond). */
+export const ORIGINAL_COLORS = {
+  dark: "#111111",
+} as const;
+
+export const ORIGINAL_COLORS_HEX = {
+  dark: "111111",
+} as const;
+
+export const ORIGINAL_FONT = "Calibri";
+/** Built-in sans for @react-pdf (no Calibri file shipped). */
+export const ORIGINAL_PDF_FONT = "Helvetica";
+export const ORIGINAL_PDF_FONT_BOLD = "Helvetica-Bold";
+export const ORIGINAL_PDF_FONT_ITALIC = "Helvetica-Oblique";
+
+export const ORIGINAL_SECTIONS = {
+  summary: "SUMMARY",
+  skills: "TECHNICAL SKILLS",
+  experience: "WORK EXPERIENCE",
+  education: "EDUCATION",
+} as const;
+
+/** Bin-role tokens: Calibri / black-rule (Charles Bloomberg-style). */
+export const BIN_COLORS = {
+  dark: "#111111",
+  muted: "#333333",
+  rule: "#111111",
+} as const;
+
+export const BIN_COLORS_HEX = {
+  dark: "111111",
+  muted: "333333",
+  rule: "111111",
+} as const;
+
+export const BIN_FONT = "Calibri";
+/** Built-in sans for @react-pdf (no Calibri file shipped). */
+export const BIN_PDF_FONT = "Helvetica";
+export const BIN_PDF_FONT_BOLD = "Helvetica-Bold";
+export const BIN_PDF_FONT_ITALIC = "Helvetica-Oblique";
+
+export const BIN_SECTIONS = {
+  summary: "SUMMARY",
+  skills: "TECHNICAL SKILLS",
+  experience: "WORK EXPERIENCE",
+  education: "EDUCATION",
+} as const;

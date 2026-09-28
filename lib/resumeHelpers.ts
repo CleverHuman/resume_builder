@@ -27,6 +27,36 @@ export function formatContactLine(personal: PersonalInfo): string {
     .join("  |  ");
 }
 
+/** Original-style contact: single spaces around the pipe. */
+export function formatOriginalContactLine(personal: PersonalInfo): string {
+  return CONTACT_FIELDS.map((f) => personal[f])
+    .filter((v): v is string => Boolean(v))
+    .join(" | ");
+}
+
+/** Original-style experience line: Company | Location | Start - End. */
+export function formatExperienceMeta(exp: Experience): string {
+  const parts: string[] = [];
+  if (exp.company) parts.push(exp.company);
+  if (exp.location) parts.push(exp.location);
+  const start = exp.start_date ?? "";
+  const end = exp.end_date ?? "";
+  if (start || end) parts.push(`${start} - ${end}`);
+  return parts.join(" | ");
+}
+
+/** Original-style education line: Institution - Location | years. */
+export function formatEducationMeta(edu: Education): string {
+  let meta = edu.institution ?? "";
+  if (edu.location) meta += ` - ${edu.location}`;
+  if (edu.start_year && edu.end_year) {
+    meta += ` | ${edu.start_year} - ${edu.end_year}`;
+  } else if (edu.graduation_date) {
+    meta += ` | ${edu.graduation_date}`;
+  }
+  return meta;
+}
+
 /** Caleb header contact: location • phone • email (linkedin is a separate line). */
 export function formatCalebContactLine(personal: PersonalInfo): string {
   return [personal.location, personal.phone, personal.email]
@@ -80,6 +110,34 @@ export function formatExperienceLocation(exp: Experience): string {
 /** Join skill names with pipes: "A | B | C". */
 export function formatSkillList(items: string[]): string {
   return items.join(" | ");
+}
+
+function nonEmpty(parts: (string | undefined)[]): string[] {
+  return parts.map((p) => p?.trim() ?? "").filter(Boolean);
+}
+
+/** Bin header contact: location • email • phone • linkedin. */
+export function formatBinContactLine(personal: PersonalInfo): string {
+  return nonEmpty([
+    personal.location,
+    personal.email,
+    personal.phone,
+    formatCalebLinkedIn(personal),
+    personal.github,
+    personal.website,
+  ]).join("  •  ");
+}
+
+/** Bin experience header: Position | Company | Location | Start—End. */
+export function formatBinExperienceHeader(exp: Experience): string {
+  const dates = formatDateRange(exp.start_date, exp.end_date).replace(" – ", "—");
+  return nonEmpty([exp.position, exp.company, exp.location, dates]).join(" | ");
+}
+
+/** Bin education header: Degree | Institution | Location | Year. */
+export function formatBinEducationHeader(edu: Education): string {
+  const dates = formatEducationDates(edu).replace(" – ", "—");
+  return nonEmpty([edu.degree, edu.institution, edu.location, dates]).join(" | ");
 }
 
 export function formatEducationDates(edu: Education): string {

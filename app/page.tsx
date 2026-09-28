@@ -13,7 +13,9 @@ import {
   showsEducationExtras,
   storeRole,
   tableForRole,
+  usesBinResumeStyle,
   usesCalebResumeStyle,
+  usesOriginalResumeStyle,
   usesTitleCaseName,
 } from "@/lib/auth";
 import { useEffect, useState } from "react";
@@ -65,6 +67,8 @@ export default function Home() {
   const educationExtras = showsEducationExtras(auth.role);
   const titleCaseName = usesTitleCaseName(auth.role);
   const calebStyle = usesCalebResumeStyle(auth.role);
+  const originalStyle = usesOriginalResumeStyle(auth.role);
+  const binStyle = usesBinResumeStyle(auth.role);
 
   return (
     <div className="flex h-screen flex-col bg-[#1e1e2e]">
@@ -83,6 +87,8 @@ export default function Home() {
           showEducationExtras={educationExtras}
           titleCaseName={titleCaseName}
           calebStyle={calebStyle}
+          originalStyle={originalStyle}
+          binStyle={binStyle}
         />
       </div>
       <div className={effectiveTab === "proposal" ? "contents" : "hidden"}>
@@ -96,6 +102,8 @@ export default function Home() {
             showEducationExtras={educationExtras}
             titleCaseName={titleCaseName}
             calebStyle={calebStyle}
+            originalStyle={originalStyle}
+            binStyle={binStyle}
           />
         </div>
       )}

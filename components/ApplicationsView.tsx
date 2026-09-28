@@ -1,7 +1,9 @@
 "use client";
 
+import BinPreviewPanel from "@/components/BinPreviewPanel";
 import PreviewPanel from "@/components/PreviewPanel";
 import CalebPreviewPanel from "@/components/CalebPreviewPanel";
+import OriginalPreviewPanel from "@/components/OriginalPreviewPanel";
 import ProposalPreviewPanel from "@/components/ProposalPreviewPanel";
 import ResizableSplit from "@/components/ResizableSplit";
 import { ApplicationRecord } from "@/lib/types";
@@ -13,6 +15,8 @@ interface Props {
   showEducationExtras?: boolean;
   titleCaseName?: boolean;
   calebStyle?: boolean;
+  originalStyle?: boolean;
+  binStyle?: boolean;
 }
 
 const PAGE_SIZE_OPTIONS = [10, 20, 50];
@@ -24,6 +28,8 @@ export default function ApplicationsView({
   showEducationExtras = false,
   titleCaseName = false,
   calebStyle = false,
+  originalStyle = false,
+  binStyle = false,
 }: Props) {
   const [applications, setApplications] = useState<ApplicationRecord[]>([]);
   const [totalCount, setTotalCount] = useState(0);
@@ -241,8 +247,18 @@ export default function ApplicationsView({
                   </button>
                 </div>
                 <div className="min-h-0 flex-1 overflow-hidden rounded border border-[#3f3f5c] bg-[#2a2a3e]">
-                  {calebStyle ? (
+                  {originalStyle ? (
+                    <OriginalPreviewPanel
+                      data={selected?.resume ?? null}
+                      emptyMessage="Select an application to preview its resume"
+                    />
+                  ) : calebStyle ? (
                     <CalebPreviewPanel
+                      data={selected?.resume ?? null}
+                      emptyMessage="Select an application to preview its resume"
+                    />
+                  ) : binStyle ? (
+                    <BinPreviewPanel
                       data={selected?.resume ?? null}
                       emptyMessage="Select an application to preview its resume"
                     />

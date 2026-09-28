@@ -1,8 +1,10 @@
 "use client";
 
+import BinPreviewPanel from "@/components/BinPreviewPanel";
 import BottomBar from "@/components/BottomBar";
 import CalebPreviewPanel from "@/components/CalebPreviewPanel";
 import JsonEditorPanel from "@/components/JsonEditorPanel";
+import OriginalPreviewPanel from "@/components/OriginalPreviewPanel";
 import PreviewPanel from "@/components/PreviewPanel";
 import ResizableSplit from "@/components/ResizableSplit";
 import { downloadBlob } from "@/lib/downloadBlob";
@@ -28,6 +30,8 @@ interface Props {
   showEducationExtras?: boolean;
   titleCaseName?: boolean;
   calebStyle?: boolean;
+  originalStyle?: boolean;
+  binStyle?: boolean;
 }
 
 export default function ResumeBuilderView({
@@ -37,6 +41,8 @@ export default function ResumeBuilderView({
   showEducationExtras = false,
   titleCaseName = false,
   calebStyle = false,
+  originalStyle = false,
+  binStyle = false,
 }: Props) {
   const [jsonText, setJsonText] = useState("");
   const [debouncedText, setDebouncedText] = useState("");
@@ -86,11 +92,17 @@ export default function ResumeBuilderView({
 
   async function handleExportPdf() {
     if (!resumeData) return;
-    const blob = calebStyle
-      ? await (await import("@/lib/pdf/generateCalebResumePdf")).generateCalebResumePdfBlob(resumeData)
-      : await (
-          await import("@/lib/pdf/generateResumePdf")
-        ).generateResumePdfBlob(resumeData, { showEducationExtras, titleCaseName });
+    const blob = originalStyle
+      ? await (
+          await import("@/lib/pdf/generateOriginalResumePdf")
+        ).generateOriginalResumePdfBlob(resumeData)
+      : calebStyle
+        ? await (await import("@/lib/pdf/generateCalebResumePdf")).generateCalebResumePdfBlob(resumeData)
+        : binStyle
+          ? await (await import("@/lib/pdf/generateBinResumePdf")).generateBinResumePdfBlob(resumeData)
+          : await (
+              await import("@/lib/pdf/generateResumePdf")
+            ).generateResumePdfBlob(resumeData, { showEducationExtras, titleCaseName });
     const filename = buildResumeFilename(resumeData.personal ?? {}, "pdf");
     downloadBlob(blob, filename);
     flash(`Saved: ${filename}`);
@@ -120,13 +132,19 @@ export default function ResumeBuilderView({
       onCompanyChange(resumeData.personal.company);
     }
 
-    const blob = calebStyle
+    const blob = originalStyle
       ? await (
-          await import("@/lib/docx/generateCalebResumeDocx")
-        ).generateCalebResumeDocxBlob(resumeData)
-      : await (
-          await import("@/lib/docx/generateResumeDocx")
-        ).generateResumeDocxBlob(resumeData, { showEducationExtras, titleCaseName });
+          await import("@/lib/docx/generateOriginalResumeDocx")
+        ).generateOriginalResumeDocxBlob(resumeData)
+      : calebStyle
+        ? await (
+            await import("@/lib/docx/generateCalebResumeDocx")
+          ).generateCalebResumeDocxBlob(resumeData)
+        : binStyle
+          ? await (await import("@/lib/docx/generateBinResumeDocx")).generateBinResumeDocxBlob(resumeData)
+          : await (
+              await import("@/lib/docx/generateResumeDocx")
+            ).generateResumeDocxBlob(resumeData, { showEducationExtras, titleCaseName });
     const filename = buildResumeFilename(resumeData.personal ?? {}, "docx");
     downloadBlob(blob, filename);
     flash(`Saved: ${filename} (synced)`);
@@ -134,13 +152,19 @@ export default function ResumeBuilderView({
 
   async function handleExportDocxWithoutSave() {
     if (!resumeData) return;
-    const blob = calebStyle
+    const blob = originalStyle
       ? await (
-          await import("@/lib/docx/generateCalebResumeDocx")
-        ).generateCalebResumeDocxBlob(resumeData)
-      : await (
-          await import("@/lib/docx/generateResumeDocx")
-        ).generateResumeDocxBlob(resumeData, { showEducationExtras, titleCaseName });
+          await import("@/lib/docx/generateOriginalResumeDocx")
+        ).generateOriginalResumeDocxBlob(resumeData)
+      : calebStyle
+        ? await (
+            await import("@/lib/docx/generateCalebResumeDocx")
+          ).generateCalebResumeDocxBlob(resumeData)
+        : binStyle
+          ? await (await import("@/lib/docx/generateBinResumeDocx")).generateBinResumeDocxBlob(resumeData)
+          : await (
+              await import("@/lib/docx/generateResumeDocx")
+            ).generateResumeDocxBlob(resumeData, { showEducationExtras, titleCaseName });
     const filename = buildResumeFilename(resumeData.personal ?? {}, "docx");
     downloadBlob(blob, filename);
     flash(`Saved: ${filename} (asynchronously)`);
@@ -166,8 +190,12 @@ export default function ResumeBuilderView({
                 <span className={`text-[12px] ${STATUS_COLOR[statusKind]}`}>{status}</span>
               </div>
               <div className="min-h-0 flex-1 overflow-hidden rounded border border-[#3f3f5c] bg-[#2a2a3e]">
-                {calebStyle ? (
+                {originalStyle ? (
+                  <OriginalPreviewPanel data={resumeData} />
+                ) : calebStyle ? (
                   <CalebPreviewPanel data={resumeData} />
+                ) : binStyle ? (
+                  <BinPreviewPanel data={resumeData} />
                 ) : (
                   <PreviewPanel
                     data={resumeData}
